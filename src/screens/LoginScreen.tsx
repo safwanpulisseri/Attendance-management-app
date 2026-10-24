@@ -8,17 +8,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { StatusBadge } from '../components/StatusBadge';
 
 export const LoginScreen: React.FC = () => {
-  const { login, quickLogin, users } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -36,7 +35,7 @@ export const LoginScreen: React.FC = () => {
     setLoading(false);
 
     if (!result.success) {
-      setErrorMessage(result.message || 'Login failed. Please check your credentials.');
+      setErrorMessage(result.message || 'Invalid credentials. Please verify your email and password.');
     }
   };
 
@@ -56,33 +55,35 @@ export const LoginScreen: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Logo & Header */}
+          {/* Executive Brand Header */}
           <View style={styles.header}>
-            <View style={styles.logoWrap}>
-              <Ionicons name="time" size={38} color={COLORS.primary} />
+            <View style={styles.brandBadge}>
+              <View style={styles.brandDot} />
+              <Text style={styles.brandBadgeText}>ENTERPRISE WORKFORCE</Text>
             </View>
-            <Text style={styles.brandTitle}>TimeSync</Text>
+
+            <Text style={styles.brandTitle}>CADENCE</Text>
             <Text style={styles.brandSubtitle}>
-              Enterprise Attendance Management System
+              Attendance & Shift Management System
             </Text>
           </View>
 
           {/* Login Card */}
           <View style={[styles.card, SHADOWS.card]}>
-            <Text style={styles.cardTitle}>Sign In</Text>
+            <Text style={styles.cardTitle}>Identity Sign In</Text>
             <Text style={styles.cardSubtitle}>
-              Enter your credentials to access your dashboard
+              Authenticate using your organization credentials
             </Text>
 
             {errorMessage ? (
               <View style={styles.errorBox}>
-                <Ionicons name="alert-circle" size={18} color={COLORS.danger} />
+                <Ionicons name="alert-circle" size={16} color={COLORS.danger} />
                 <Text style={styles.errorBannerText}>{errorMessage}</Text>
               </View>
             ) : null}
 
             <Input
-              label="Email Address"
+              label="Work Email"
               placeholder="e.g. admin@test.com"
               value={email}
               onChangeText={(text) => {
@@ -97,7 +98,7 @@ export const LoginScreen: React.FC = () => {
 
             <Input
               label="Password"
-              placeholder="Enter your password"
+              placeholder="Enter your security password"
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -108,7 +109,7 @@ export const LoginScreen: React.FC = () => {
             />
 
             <Button
-              title="Sign In"
+              title="Sign In to Workspace"
               onPress={handleLogin}
               loading={loading}
               fullWidth
@@ -121,24 +122,24 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.demoSection}>
             <View style={styles.demoDividerRow}>
               <View style={styles.demoLine} />
-              <Text style={styles.demoDividerText}>DEMO TEST ACCOUNTS</Text>
+              <Text style={styles.demoDividerText}>ONE-TAP EVALUATOR PROFILES</Text>
               <View style={styles.demoLine} />
             </View>
 
             <Text style={styles.demoHint}>
-              Tap any role below to pre-fill credentials instantly:
+              Tap below to pre-fill test credentials directly:
             </Text>
 
             <View style={styles.demoCardsContainer}>
               {/* Admin Pill */}
               <TouchableOpacity
                 style={styles.demoPill}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
                 onPress={() => fillDemoAccount('admin@test.com', 'Admin@123')}
               >
                 <View style={styles.demoPillHeader}>
                   <StatusBadge role="admin" size="sm" />
-                  <Ionicons name="flash-outline" size={14} color={COLORS.roleAdmin} />
+                  <Text style={styles.demoRoleMeta}>Full Privileges</Text>
                 </View>
                 <Text style={styles.demoEmail}>admin@test.com</Text>
                 <Text style={styles.demoPass}>PW: Admin@123</Text>
@@ -147,12 +148,12 @@ export const LoginScreen: React.FC = () => {
               {/* Senior Staff Pill */}
               <TouchableOpacity
                 style={styles.demoPill}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
                 onPress={() => fillDemoAccount('senior@test.com', 'Senior@123')}
               >
                 <View style={styles.demoPillHeader}>
                   <StatusBadge role="senior_staff" size="sm" />
-                  <Ionicons name="flash-outline" size={14} color={COLORS.roleSenior} />
+                  <Text style={styles.demoRoleMeta}>Staff Monitor</Text>
                 </View>
                 <Text style={styles.demoEmail}>senior@test.com</Text>
                 <Text style={styles.demoPass}>PW: Senior@123</Text>
@@ -161,12 +162,12 @@ export const LoginScreen: React.FC = () => {
               {/* Staff Pill */}
               <TouchableOpacity
                 style={styles.demoPill}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
                 onPress={() => fillDemoAccount('staff@test.com', 'Staff@123')}
               >
                 <View style={styles.demoPillHeader}>
                   <StatusBadge role="staff" size="sm" />
-                  <Ionicons name="flash-outline" size={14} color={COLORS.roleStaff} />
+                  <Text style={styles.demoRoleMeta}>Individual Access</Text>
                 </View>
                 <Text style={styles.demoEmail}>staff@test.com</Text>
                 <Text style={styles.demoPass}>PW: Staff@123</Text>
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.xxl,
     alignItems: 'center',
-    maxWidth: 500,
+    maxWidth: 480,
     width: '100%',
     alignSelf: 'center',
   },
@@ -200,45 +201,60 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
     marginTop: SPACING.md,
   },
-  logoWrap: {
-    width: 72,
-    height: 72,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.primaryLight,
+  brandBadge: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SPACING.md,
-    borderWidth: 1.5,
-    borderColor: '#C7D2FE',
+    gap: 6,
+    backgroundColor: COLORS.surface,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: SPACING.sm,
+  },
+  brandDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.primaryAccent,
+  },
+  brandBadgeText: {
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.9,
   },
   brandTitle: {
-    fontSize: 28,
-    fontWeight: '900',
+    fontSize: 26,
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
-    letterSpacing: -0.5,
+    letterSpacing: 1.5,
   },
   brandSubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+    fontSize: 13,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMedium,
     marginTop: 4,
   },
   card: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     width: '100%',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 18,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
   cardSubtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginBottom: SPACING.lg,
   },
   errorBox: {
@@ -247,16 +263,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.dangerBg,
     borderColor: COLORS.dangerBorder,
     borderWidth: 1,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.sm,
     padding: SPACING.md,
     marginBottom: SPACING.md,
     gap: 8,
   },
   errorBannerText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 12,
+    fontFamily: FONTS.medium,
     color: COLORS.dangerText,
-    fontWeight: '500',
   },
   loginBtn: {
     marginTop: SPACING.sm,
@@ -276,15 +292,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
   },
   demoDividerText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.textMuted,
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMuted,
     marginHorizontal: SPACING.md,
-    letterSpacing: 0.8,
+    letterSpacing: 1,
   },
   demoHint: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMedium,
     textAlign: 'center',
     marginBottom: SPACING.md,
   },
@@ -306,15 +323,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
   },
+  demoRoleMeta: {
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMuted,
+  },
   demoEmail: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
     color: COLORS.textPrimary,
   },
   demoPass: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    color: COLORS.slateMedium,
     marginTop: 2,
   },
 });

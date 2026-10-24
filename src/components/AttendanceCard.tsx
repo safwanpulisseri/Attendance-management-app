@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AttendanceRecord } from '../types';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from './StatusBadge';
 import { formatDisplayDate, calculateWorkDuration } from '../utils/dateUtils';
 
@@ -37,7 +37,7 @@ export const AttendanceCard: React.FC<AttendanceCardProps> = ({
           </View>
         ) : (
           <View style={styles.dateWrap}>
-            <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
+            <Ionicons name="calendar-outline" size={15} color={COLORS.slateMedium} />
             <Text style={styles.dateText}>{formatDisplayDate(record.date)}</Text>
           </View>
         )}
@@ -48,7 +48,7 @@ export const AttendanceCard: React.FC<AttendanceCardProps> = ({
       {/* Date Row if showUserInfo is true */}
       {showUserInfo ? (
         <View style={styles.dateSubRow}>
-          <Ionicons name="calendar-outline" size={14} color={COLORS.textMuted} />
+          <Ionicons name="calendar-outline" size={13} color={COLORS.slateMuted} />
           <Text style={styles.dateSubText}>{formatDisplayDate(record.date)}</Text>
         </View>
       ) : null}
@@ -56,37 +56,28 @@ export const AttendanceCard: React.FC<AttendanceCardProps> = ({
       {/* Times Grid */}
       <View style={styles.grid}>
         <View style={styles.gridCol}>
-          <View style={styles.timeLabelRow}>
-            <Ionicons name="log-in-outline" size={15} color={COLORS.success} />
-            <Text style={styles.timeLabel}>Check In</Text>
-          </View>
+          <Text style={styles.timeLabel}>CHECK IN</Text>
           <Text style={styles.timeValue}>{record.checkInTime || '--:--'}</Text>
         </View>
 
         <View style={styles.divider} />
 
         <View style={styles.gridCol}>
-          <View style={styles.timeLabelRow}>
-            <Ionicons name="log-out-outline" size={15} color={COLORS.secondary} />
-            <Text style={styles.timeLabel}>Check Out</Text>
-          </View>
+          <Text style={styles.timeLabel}>CHECK OUT</Text>
           <Text style={styles.timeValue}>{record.checkOutTime || '--:--'}</Text>
         </View>
 
         <View style={styles.divider} />
 
         <View style={styles.gridCol}>
-          <View style={styles.timeLabelRow}>
-            <Ionicons name="time-outline" size={15} color={COLORS.primary} />
-            <Text style={styles.timeLabel}>Duration</Text>
-          </View>
+          <Text style={styles.timeLabel}>DURATION</Text>
           <Text style={styles.timeValue}>{duration}</Text>
         </View>
       </View>
 
       {record.note ? (
         <View style={styles.noteBox}>
-          <Ionicons name="information-circle-outline" size={14} color={COLORS.textSecondary} />
+          <Ionicons name="information-circle-outline" size={13} color={COLORS.slateMedium} />
           <Text style={styles.noteText}>{record.note}</Text>
         </View>
       ) : null}
@@ -96,8 +87,8 @@ export const AttendanceCard: React.FC<AttendanceCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
     borderWidth: 1,
@@ -107,15 +98,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: SPACING.xs,
+    marginBottom: 4,
   },
   userColumn: {
     flex: 1,
     marginRight: SPACING.sm,
   },
   userName: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 14,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   roleWrap: {
@@ -125,8 +116,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   deptText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
   },
   dateWrap: {
     flexDirection: 'row',
@@ -134,28 +126,29 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   dateText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontFamily: FONTS.semiBold,
     color: COLORS.textPrimary,
   },
   dateSubRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
     marginBottom: SPACING.sm,
   },
   dateSubText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
   },
   grid: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.surfaceSubtle,
+    borderRadius: RADIUS.sm,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.xs,
-    marginTop: SPACING.xs,
+    marginTop: 4,
   },
   gridCol: {
     flex: 1,
@@ -163,37 +156,34 @@ const styles = StyleSheet.create({
   },
   divider: {
     width: 1,
-    height: 28,
+    height: 24,
     backgroundColor: COLORS.border,
   },
-  timeLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+  timeLabel: {
+    fontSize: 9,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.6,
     marginBottom: 2,
   },
-  timeLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: COLORS.textSecondary,
-  },
   timeValue: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    fontFamily: FONTS.semiBold,
     color: COLORS.textPrimary,
   },
   noteBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.primaryLight,
-    paddingVertical: 6,
+    backgroundColor: COLORS.surfaceSubtle,
+    paddingVertical: 5,
     paddingHorizontal: 10,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.xs,
     marginTop: SPACING.sm,
   },
   noteText: {
-    fontSize: 12,
-    color: COLORS.primaryDark,
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateDark,
   },
 });

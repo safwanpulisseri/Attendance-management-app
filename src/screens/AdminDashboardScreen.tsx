@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatCard } from '../components/StatCard';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { StatusBadge } from '../components/StatusBadge';
@@ -29,18 +29,16 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
   const stats = getStats(currentUser);
   const allRecords = getScopedRecords(currentUser);
   const today = getTodayDateString();
-
-  // Recent attendance list (latest 5 records across all roles)
   const recentRecords = allRecords.slice(0, 5);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Top Header */}
+        {/* Executive Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.welcomeSubtitle}>Organization Overview</Text>
-            <Text style={styles.welcomeTitle}>Admin Command Center</Text>
+            <Text style={styles.welcomeSubtitle}>ORGANIZATION GOVERNANCE</Text>
+            <Text style={styles.welcomeTitle}>Executive Command</Text>
             <View style={styles.badgeRow}>
               <StatusBadge role="admin" size="sm" />
               <Text style={styles.dateLabel}> • {formatDisplayDate(today)}</Text>
@@ -51,7 +49,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
             style={styles.profileBtn}
             onPress={() => navigation.navigate('ProfileTab')}
           >
-            <Ionicons name="shield-checkmark" size={24} color={COLORS.roleAdmin} />
+            <Ionicons name="shield-checkmark-outline" size={20} color={COLORS.roleAdmin} />
           </TouchableOpacity>
         </View>
 
@@ -63,114 +61,108 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
         >
           <View style={styles.selfActionLeft}>
             <View style={styles.selfIconWrap}>
-              <Ionicons name="finger-print" size={22} color={COLORS.primary} />
+              <Ionicons name="finger-print-outline" size={18} color={COLORS.textPrimary} />
             </View>
             <View>
-              <Text style={styles.selfActionTitle}>Mark Your Own Attendance</Text>
-              <Text style={styles.selfActionSub}>Tap to check in or out for today</Text>
+              <Text style={styles.selfActionTitle}>Personal Shift Attendance</Text>
+              <Text style={styles.selfActionSub}>Tap to record arrival or departure</Text>
             </View>
           </View>
-          <Ionicons name="chevron-forward" size={18} color={COLORS.primary} />
+          <Ionicons name="chevron-forward" size={16} color={COLORS.slateMedium} />
         </TouchableOpacity>
 
-        {/* Dynamic Summary Cards */}
-        <Text style={styles.sectionHeading}>Today's Live Statistics</Text>
+        {/* Live Metrics Grid */}
+        <Text style={styles.sectionHeading}>ORGANIZATION TELEMETRY</Text>
 
         <View style={styles.statsGrid}>
           <View style={styles.statsRow}>
             <StatCard
-              title="Total Users"
+              title="TOTAL HEADCOUNT"
               value={stats.totalUsers}
-              icon="people"
-              color={COLORS.primary}
-              bgColor={COLORS.primaryLight}
-              subtitle="All registered accounts"
+              icon="people-outline"
+              color={COLORS.textPrimary}
+              subtitle="Registered active profiles"
               onPress={() => navigation.navigate('Users')}
             />
             <StatCard
-              title="Staff Members"
+              title="STAFF MEMBERS"
               value={stats.totalStaff}
-              icon="person"
+              icon="person-outline"
               color={COLORS.roleStaff}
-              bgColor={COLORS.roleStaffBg}
-              subtitle="Regular employees"
+              subtitle="Operations & engineering"
               onPress={() => navigation.navigate('Records', { role: 'staff' })}
             />
           </View>
 
           <View style={styles.statsRow}>
             <StatCard
-              title="Senior Staff"
+              title="SENIOR LEADS"
               value={stats.totalSeniorStaff}
-              icon="ribbon"
+              icon="ribbon-outline"
               color={COLORS.roleSenior}
-              bgColor={COLORS.roleSeniorBg}
-              subtitle="Team leads"
+              subtitle="Department coordinators"
               onPress={() => navigation.navigate('Records', { role: 'senior_staff' })}
             />
             <StatCard
-              title="Checked In Today"
+              title="CHECKED IN TODAY"
               value={stats.checkedInToday}
-              icon="checkmark-circle"
+              icon="checkmark-circle-outline"
               color={COLORS.success}
-              bgColor={COLORS.successBg}
-              subtitle="Active present"
+              subtitle="Currently active"
               onPress={() => navigation.navigate('Records', { date: today })}
             />
           </View>
 
           <View style={styles.statsRow}>
             <StatCard
-              title="Not Checked In"
+              title="NOT CHECKED IN"
               value={stats.notCheckedInToday}
-              icon="time"
-              color={COLORS.warning}
-              bgColor={COLORS.warningBg}
-              subtitle="Pending arrival"
+              icon="time-outline"
+              color={COLORS.accentGold}
+              subtitle="Awaiting shift arrival"
             />
             <StatCard
-              title="Checked Out"
+              title="COMPLETED SHIFTS"
               value={stats.checkedOutToday}
-              icon="log-out"
+              icon="log-out-outline"
               color={COLORS.secondary}
-              bgColor={COLORS.secondaryLight}
-              subtitle="Shift completed"
+              subtitle="Checked out today"
             />
           </View>
         </View>
 
-        {/* Quick Shortcuts */}
+        {/* Quick Navigation Shortcuts */}
         <View style={styles.shortcutsRow}>
           <TouchableOpacity
             style={[styles.shortcutCard, SHADOWS.card]}
             onPress={() => navigation.navigate('Records')}
           >
-            <Ionicons name="list-outline" size={20} color={COLORS.primary} />
-            <Text style={styles.shortcutText}>All Records</Text>
+            <Ionicons name="document-text-outline" size={16} color={COLORS.textPrimary} />
+            <Text style={styles.shortcutText}>Full Attendance Log</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.shortcutCard, SHADOWS.card]}
             onPress={() => navigation.navigate('Users')}
           >
-            <Ionicons name="people-outline" size={20} color={COLORS.roleSenior} />
-            <Text style={styles.shortcutText}>User Directory</Text>
+            <Ionicons name="people-outline" size={16} color={COLORS.textPrimary} />
+            <Text style={styles.shortcutText}>Staff Directory</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Recent Attendance Records Across Organization */}
+        {/* Recent Attendance Activity Feed */}
         <View style={styles.recentSection}>
           <View style={styles.sectionHeaderRow}>
             <View>
-              <Text style={styles.sectionHeading}>Recent Attendance Activity</Text>
-              <Text style={styles.sectionSub}>All employees across departments</Text>
+              <Text style={styles.sectionHeading}>RECENT ACTIVITY FEED</Text>
+              <Text style={styles.sectionSub}>Live shifts recorded across departments</Text>
             </View>
             <TouchableOpacity
               onPress={() => navigation.navigate('Records')}
               style={styles.seeAllBtn}
             >
               <Text style={styles.seeAllText}>View All</Text>
-              <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
+              <Ionicons name="arrow-forward" size={13} color={COLORS.primary} />
             </TouchableOpacity>
           </View>
 
@@ -194,7 +186,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.lg,
-    maxWidth: 700,
+    maxWidth: 620,
     width: '100%',
     alignSelf: 'center',
   },
@@ -205,15 +197,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   welcomeSubtitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMuted,
+    letterSpacing: 1,
   },
   welcomeTitle: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
     marginTop: 2,
   },
@@ -223,29 +214,30 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   dateLabel: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMedium,
   },
   profileBtn: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.roleAdminBg,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: '#E9D5FF',
+    borderWidth: 1,
+    borderColor: COLORS.roleAdminBorder,
   },
   selfActionBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: '#C7D2FE',
+    borderColor: COLORS.border,
   },
   selfActionLeft: {
     flexDirection: 'row',
@@ -253,32 +245,36 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   selfIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: RADIUS.md,
-    backgroundColor: COLORS.primaryLight,
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.sm,
+    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selfActionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   selfActionSub: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   sectionHeading: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMuted,
+    letterSpacing: 0.9,
     marginBottom: SPACING.xs,
   },
   sectionSub: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMedium,
+    marginTop: 2,
   },
   statsGrid: {
     marginBottom: SPACING.md,
@@ -289,8 +285,8 @@ const styles = StyleSheet.create({
   },
   shortcutsRow: {
     flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.xl,
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
   },
   shortcutCard: {
     flex: 1,
@@ -298,15 +294,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   shortcutText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   recentSection: {
@@ -324,13 +320,14 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   seeAllText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    fontFamily: FONTS.bold,
     color: COLORS.primary,
   },
   emptyText: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     textAlign: 'center',
     paddingVertical: SPACING.lg,
   },

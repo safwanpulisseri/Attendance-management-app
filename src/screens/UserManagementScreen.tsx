@@ -7,12 +7,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Modal,
-  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
@@ -28,20 +27,18 @@ export const UserManagementScreen: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // Security check: only Admin can view this screen
   if (!currentUser || currentUser.role !== 'admin') {
     return (
       <SafeAreaView style={styles.safeArea}>
         <EmptyState
           icon="shield-outline"
-          title="Access Restricted"
-          description="You do not have administrative privileges to access the User Management directory."
+          title="Administrative Privilege Required"
+          description="Access to the employee governance directory is restricted to organizational Administrators."
         />
       </SafeAreaView>
     );
   }
 
-  // Filtered users
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       if (search.trim()) {
@@ -59,7 +56,6 @@ export const UserManagementScreen: React.FC = () => {
     });
   }, [users, search, roleFilter]);
 
-  // Attendance stats for selected user in modal
   const getUserStats = (user: User) => {
     const userRecs = records.filter((r) => r.userId === user.id);
     const completed = userRecs.filter((r) => r.status === 'checked_out').length;
@@ -75,20 +71,20 @@ export const UserManagementScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>User Management</Text>
+            <Text style={styles.title}>Workforce Directory</Text>
             <Text style={styles.subtitle}>
-              Manage & inspect accounts across the organization
+              Manage organization personnel & permissions
             </Text>
           </View>
           <View style={styles.userCountPill}>
-            <Text style={styles.userCountText}>{users.length} Users</Text>
+            <Text style={styles.userCountText}>{users.length} Active Profiles</Text>
           </View>
         </View>
 
         {/* Search */}
         <View style={styles.searchSection}>
           <Input
-            placeholder="Search by name, email, or role..."
+            placeholder="Search by name, email, department..."
             value={search}
             onChangeText={setSearch}
             leftIcon="search-outline"
@@ -103,7 +99,7 @@ export const UserManagementScreen: React.FC = () => {
               const isSelected = roleFilter === r;
               let label = 'All';
               if (r === 'admin') label = 'Admins';
-              if (r === 'senior_staff') label = 'Senior Staff';
+              if (r === 'senior_staff') label = 'Senior Leads';
               if (r === 'staff') label = 'Staff';
 
               return (
@@ -154,16 +150,16 @@ export const UserManagementScreen: React.FC = () => {
               </View>
 
               <View style={styles.userCardRight}>
-                <Text style={styles.userIdText}>ID: {item.id}</Text>
-                <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+                <Text style={styles.userIdText}>{item.id}</Text>
+                <Ionicons name="chevron-forward" size={15} color={COLORS.slateMuted} />
               </View>
             </TouchableOpacity>
           )}
           ListEmptyComponent={
             <EmptyState
               icon="people-outline"
-              title="No users found"
-              description="No registered user matches your current search or filter."
+              title="No employees found"
+              description="No registered user matches your current search or role filter."
               actionTitle={search || roleFilter !== 'all' ? 'Reset Filters' : undefined}
               onActionPress={() => {
                 setSearch('');
@@ -203,32 +199,32 @@ export const UserManagementScreen: React.FC = () => {
 
                   <View style={styles.modalDetails}>
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>User ID:</Text>
+                      <Text style={styles.detailLabel}>PROFILE IDENTIFIER</Text>
                       <Text style={styles.detailValue}>{selectedUser.id}</Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Department:</Text>
+                      <Text style={styles.detailLabel}>DEPARTMENT</Text>
                       <Text style={styles.detailValue}>{selectedUser.department}</Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Joined Date:</Text>
+                      <Text style={styles.detailLabel}>APPOINTMENT DATE</Text>
                       <Text style={styles.detailValue}>
                         {formatDisplayDate(selectedUser.joinedDate)}
                       </Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Total Logs:</Text>
+                      <Text style={styles.detailLabel}>LIFETIME SHIFTS</Text>
                       <Text style={styles.detailValue}>
-                        {getUserStats(selectedUser).totalRecords} shifts recorded
+                        {getUserStats(selectedUser).totalRecords} logged
                       </Text>
                     </View>
                   </View>
 
                   <Button
-                    title="Close Details"
+                    title="Dismiss Profile"
                     onPress={() => setSelectedUser(null)}
                     variant="outline"
                     fullWidth
@@ -251,7 +247,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    maxWidth: 750,
+    maxWidth: 650,
     width: '100%',
     alignSelf: 'center',
   },
@@ -261,28 +257,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.md,
-    paddingBottom: SPACING.sm,
+    paddingBottom: SPACING.xs,
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   userCountPill: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.surfaceSubtle,
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   userCountText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.primary,
+    fontSize: 11,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateDark,
   },
   searchSection: {
     paddingHorizontal: SPACING.lg,
@@ -293,11 +292,11 @@ const styles = StyleSheet.create({
   },
   pillsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     marginBottom: SPACING.sm,
   },
   pill: {
-    paddingVertical: 6,
+    paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.surface,
@@ -309,12 +308,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   pillText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMedium,
   },
   pillTextSelected: {
     color: COLORS.textInverse,
+    fontFamily: FONTS.bold,
   },
   listContent: {
     padding: SPACING.lg,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
     borderWidth: 1,
@@ -338,31 +338,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#C7D2FE',
+    borderColor: COLORS.border,
   },
   avatarText: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: COLORS.primary,
+    fontSize: 13,
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
   },
   userInfo: {
     flex: 1,
   },
   userName: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   userEmail: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 1,
   },
   userMeta: {
@@ -372,30 +373,31 @@ const styles = StyleSheet.create({
   },
   deptText: {
     fontSize: 11,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMedium,
   },
   userCardRight: {
     alignItems: 'flex-end',
     gap: 4,
   },
   userIdText: {
-    fontSize: 11,
-    fontFamily: 'monospace',
-    color: COLORS.textMuted,
+    fontSize: 10,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMuted,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: SPACING.xl,
   },
   modalCard: {
     backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.xl,
+    borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     width: '100%',
-    maxWidth: 420,
+    maxWidth: 400,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -404,31 +406,34 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   modalAvatar: {
-    width: 64,
-    height: 64,
+    width: 56,
+    height: 56,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   modalAvatarText: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: COLORS.primary,
+    fontSize: 18,
+    fontFamily: FONTS.extraBold,
+    color: COLORS.textPrimary,
   },
   modalName: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 17,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   modalEmail: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   modalDetails: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.surfaceSubtle,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     gap: 8,
@@ -439,13 +444,14 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   detailLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.6,
   },
   detailValue: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: FONTS.semiBold,
     color: COLORS.textPrimary,
   },
 });

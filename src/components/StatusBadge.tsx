@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { AttendanceStatus, UserRole } from '../types';
-import { COLORS, RADIUS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS } from '../constants/theme';
 
 interface StatusBadgeProps {
   status?: AttendanceStatus;
@@ -17,45 +17,48 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   if (role) {
     let bg = COLORS.roleStaffBg;
     let text = COLORS.roleStaff;
-    let label = 'Staff';
+    let border = COLORS.roleStaffBorder;
+    let label = 'STAFF';
 
     if (role === 'admin') {
       bg = COLORS.roleAdminBg;
       text = COLORS.roleAdmin;
-      label = 'Admin';
+      border = COLORS.roleAdminBorder;
+      label = 'ADMINISTRATOR';
     } else if (role === 'senior_staff') {
       bg = COLORS.roleSeniorBg;
       text = COLORS.roleSenior;
-      label = 'Senior Staff';
+      border = COLORS.roleSeniorBorder;
+      label = 'SENIOR LEAD';
     }
 
     return (
-      <View style={[styles.badge, { backgroundColor: bg }, styles[size]]}>
-        <Text style={[styles.text, { color: text }, styles[`text_${size}`]]}>
+      <View style={[styles.badge, { backgroundColor: bg, borderColor: border }, styles[size]]}>
+        <Text style={[styles.roleText, { color: text }, styles[`text_${size}`]]}>
           {label}
         </Text>
       </View>
     );
   }
 
-  let bg = COLORS.warningBg;
-  let text = COLORS.warningText;
-  let border = COLORS.warningBorder;
+  let bg = COLORS.pendingBg;
+  let text = COLORS.pendingText;
+  let border = COLORS.pendingBorder;
   let label = 'Not Checked In';
-  let dotColor = COLORS.warning;
+  let dotColor = COLORS.pendingDot;
 
   if (status === 'checked_in') {
-    bg = COLORS.successBg;
-    text = COLORS.successText;
-    border = COLORS.successBorder;
+    bg = COLORS.checkedInBg;
+    text = COLORS.checkedInText;
+    border = COLORS.checkedInBorder;
     label = 'Checked In';
-    dotColor = COLORS.success;
+    dotColor = COLORS.checkedInDot;
   } else if (status === 'checked_out') {
-    bg = COLORS.infoBg;
-    text = COLORS.infoText;
-    border = COLORS.infoBorder;
-    label = 'Checked Out';
-    dotColor = COLORS.info;
+    bg = COLORS.checkedOutBg;
+    text = COLORS.checkedOutText;
+    border = COLORS.checkedOutBorder;
+    label = 'Completed';
+    dotColor = COLORS.checkedOutDot;
   }
 
   return (
@@ -68,7 +71,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       ]}
     >
       <View style={[styles.dot, { backgroundColor: dotColor }]} />
-      <Text style={[styles.text, { color: text }, styles[`text_${size}`]]}>
+      <Text style={[styles.statusText, { color: text }, styles[`text_${size}`]]}>
         {label}
       </Text>
     </View>
@@ -81,39 +84,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: RADIUS.full,
     alignSelf: 'flex-start',
-  },
-  statusBadge: {
     borderWidth: 1,
   },
+  statusBadge: {},
   dot: {
     width: 6,
     height: 6,
     borderRadius: 3,
     marginRight: 6,
   },
-  text: {
-    fontWeight: '600',
+  roleText: {
+    fontFamily: FONTS.bold,
+    letterSpacing: 0.8,
+  },
+  statusText: {
+    fontFamily: FONTS.semiBold,
     letterSpacing: 0.2,
   },
   sm: {
-    paddingVertical: 2,
+    paddingVertical: 3,
     paddingHorizontal: 8,
   },
   md: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 11,
   },
   lg: {
     paddingVertical: 6,
     paddingHorizontal: 14,
   },
   text_sm: {
-    fontSize: 11,
+    fontSize: 10,
   },
   text_md: {
-    fontSize: 12,
+    fontSize: 11,
   },
   text_lg: {
-    fontSize: 13,
+    fontSize: 12,
   },
 });

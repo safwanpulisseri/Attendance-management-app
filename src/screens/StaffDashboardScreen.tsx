@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Button } from '../components/Button';
 import { AttendanceCard } from '../components/AttendanceCard';
@@ -79,10 +79,10 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Welcome & Profile Row */}
+        {/* Executive Profile Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Welcome back,</Text>
+            <Text style={styles.greeting}>WORKSPACE SESSION</Text>
             <Text style={styles.name}>{currentUser.name}</Text>
             <View style={styles.metaRow}>
               <StatusBadge role={currentUser.role} size="sm" />
@@ -101,21 +101,24 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
           </View>
         </View>
 
-        {/* Live Clock Card */}
+        {/* Live Precision Clock Telemetry Card */}
         <View style={[styles.clockCard, SHADOWS.card]}>
           <View style={styles.clockHeader}>
-            <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.dateLabel}>{formatDisplayDate(todayStr)}</Text>
+            <Ionicons name="time-outline" size={14} color={COLORS.slateMedium} />
+            <Text style={styles.dateLabel}>{formatDisplayDate(todayStr).toUpperCase()}</Text>
           </View>
 
           <Text style={styles.liveClock}>{currentTime}</Text>
-          <Text style={styles.clockSubtext}>Current Device System Time</Text>
+          <Text style={styles.clockSubtext}>Precision Device Timestamp</Text>
         </View>
 
-        {/* Today's Status Card */}
+        {/* Today's Shift Status Card */}
         <View style={[styles.statusCard, SHADOWS.card]}>
           <View style={styles.statusHeaderRow}>
-            <Text style={styles.sectionTitle}>Today's Attendance</Text>
+            <View>
+              <Text style={styles.sectionOverline}>CURRENT CYCLE</Text>
+              <Text style={styles.sectionTitle}>Today's Attendance</Text>
+            </View>
             <StatusBadge status={status} size="md" />
           </View>
 
@@ -134,9 +137,9 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
                     ? 'checkmark-circle-outline'
                     : 'alert-circle-outline'
                 }
-                size={18}
+                size={16}
                 color={
-                  feedbackMessage.type === 'success' ? COLORS.successText : COLORS.dangerText
+                  feedbackMessage.type === 'success' ? COLORS.checkedInText : COLORS.dangerText
                 }
               />
               <Text
@@ -145,7 +148,7 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
                   {
                     color:
                       feedbackMessage.type === 'success'
-                        ? COLORS.successText
+                        ? COLORS.checkedInText
                         : COLORS.dangerText,
                   },
                 ]}
@@ -158,35 +161,29 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
           {/* Time Highlights */}
           <View style={styles.timeHighlightRow}>
             <View style={styles.timeBox}>
-              <View style={styles.timeBoxHeader}>
-                <Ionicons name="log-in" size={16} color={COLORS.success} />
-                <Text style={styles.timeBoxTitle}>Check-In Time</Text>
-              </View>
+              <Text style={styles.timeBoxLabel}>ARRIVAL TIME</Text>
               <Text style={styles.timeBoxValue}>
                 {todayRecord?.checkInTime || '--:--:--'}
               </Text>
             </View>
 
             <View style={styles.timeBox}>
-              <View style={styles.timeBoxHeader}>
-                <Ionicons name="log-out" size={16} color={COLORS.secondary} />
-                <Text style={styles.timeBoxTitle}>Check-Out Time</Text>
-              </View>
+              <Text style={styles.timeBoxLabel}>DEPARTURE TIME</Text>
               <Text style={styles.timeBoxValue}>
                 {todayRecord?.checkOutTime || '--:--:--'}
               </Text>
             </View>
           </View>
 
-          {/* Primary Action Button (Check-In or Check-Out or Completed) */}
+          {/* Primary Action Button */}
           <View style={styles.actionContainer}>
             {status === 'not_checked_in' && (
               <Button
-                title="Check In Now"
+                title="Record Arrival (Check In)"
                 onPress={handleCheckIn}
-                variant="success"
+                variant="primary"
                 size="lg"
-                icon="finger-print-outline"
+                icon="log-in-outline"
                 loading={actionLoading}
                 fullWidth
               />
@@ -194,9 +191,9 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
 
             {status === 'checked_in' && (
               <Button
-                title="Check Out Now"
+                title="Record Departure (Check Out)"
                 onPress={handleCheckOut}
-                variant="primary"
+                variant="secondary"
                 size="lg"
                 icon="log-out-outline"
                 loading={actionLoading}
@@ -206,11 +203,11 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
 
             {status === 'checked_out' && (
               <View style={styles.completedNotice}>
-                <Ionicons name="checkmark-done-circle" size={24} color={COLORS.success} />
+                <Ionicons name="checkmark-done" size={20} color={COLORS.checkedInText} />
                 <View style={styles.completedTextWrap}>
-                  <Text style={styles.completedTitle}>Attendance Completed Today</Text>
+                  <Text style={styles.completedTitle}>Shift Completed</Text>
                   <Text style={styles.completedSub}>
-                    You have successfully checked in and checked out for today.
+                    Attendance logged for today. No further actions required.
                   </Text>
                 </View>
               </View>
@@ -218,19 +215,18 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
           </View>
         </View>
 
-        {/* Attendance History Quick Link & Recent Preview */}
+        {/* Recent Attendance Preview */}
         <View style={styles.historySection}>
           <View style={styles.historyHeader}>
-            <Text style={styles.sectionTitle}>Recent Attendance</Text>
+            <Text style={styles.sectionTitle}>Recent Logs</Text>
             <TouchableOpacity
               onPress={() => {
-                // Navigate to History tab or screen
                 navigation.navigate('History');
               }}
               style={styles.viewAllBtn}
             >
-              <Text style={styles.viewAllText}>View All History</Text>
-              <Ionicons name="chevron-forward" size={14} color={COLORS.primary} />
+              <Text style={styles.viewAllText}>Full History</Text>
+              <Ionicons name="chevron-forward" size={13} color={COLORS.primary} />
             </TouchableOpacity>
           </View>
 
@@ -254,7 +250,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.lg,
-    maxWidth: 600,
+    maxWidth: 580,
     width: '100%',
     alignSelf: 'center',
   },
@@ -265,14 +261,16 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   greeting: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    fontWeight: '500',
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMuted,
+    letterSpacing: 1,
   },
   name: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: 20,
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
+    marginTop: 2,
   },
   metaRow: {
     flexDirection: 'row',
@@ -281,26 +279,27 @@ const styles = StyleSheet.create({
   },
   department: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMedium,
   },
   avatarPill: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primaryLight,
-    borderWidth: 1.5,
-    borderColor: '#C7D2FE',
+    backgroundColor: COLORS.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: COLORS.primary,
+    fontSize: 14,
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
   },
   clockCard: {
     backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.md,
     alignItems: 'center',
@@ -311,27 +310,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   dateLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.8,
   },
   liveClock: {
-    fontSize: 32,
-    fontWeight: '900',
+    fontSize: 30,
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
     letterSpacing: 1,
     marginVertical: 4,
   },
   clockSubtext: {
     fontSize: 11,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
   },
   statusCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
     borderWidth: 1,
@@ -343,22 +344,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: SPACING.md,
   },
+  sectionOverline: {
+    fontSize: 9,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMuted,
+    letterSpacing: 0.9,
+  },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   feedbackBox: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SPACING.sm,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.sm,
     marginBottom: SPACING.md,
     gap: 8,
   },
   feedbackSuccess: {
-    backgroundColor: COLORS.successBg,
-    borderColor: COLORS.successBorder,
+    backgroundColor: COLORS.checkedInBg,
+    borderColor: COLORS.checkedInBorder,
     borderWidth: 1,
   },
   feedbackError: {
@@ -367,37 +374,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   feedbackText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 12,
+    fontFamily: FONTS.semiBold,
     flex: 1,
   },
   timeHighlightRow: {
     flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.lg,
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   timeBox: {
     flex: 1,
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
+    backgroundColor: COLORS.surfaceSubtle,
+    borderRadius: RADIUS.sm,
+    padding: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  timeBoxHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 4,
-  },
-  timeBoxTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+  timeBoxLabel: {
+    fontSize: 9,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.6,
+    marginBottom: 3,
   },
   timeBoxValue: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 13,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   actionContainer: {
@@ -406,24 +409,25 @@ const styles = StyleSheet.create({
   completedNotice: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.successBg,
+    backgroundColor: COLORS.checkedInBg,
     padding: SPACING.md,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: COLORS.successBorder,
+    borderColor: COLORS.checkedInBorder,
     gap: 12,
   },
   completedTextWrap: {
     flex: 1,
   },
   completedTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.successText,
+    fontSize: 13,
+    fontFamily: FONTS.bold,
+    color: COLORS.checkedInText,
   },
   completedSub: {
-    fontSize: 12,
-    color: COLORS.successText,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.checkedInText,
     opacity: 0.85,
     marginTop: 2,
   },
@@ -442,13 +446,14 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   viewAllText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    fontFamily: FONTS.bold,
     color: COLORS.primary,
   },
   noHistoryText: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     textAlign: 'center',
     paddingVertical: SPACING.md,
   },

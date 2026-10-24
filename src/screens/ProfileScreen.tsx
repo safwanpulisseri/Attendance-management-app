@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Button } from '../components/Button';
 import { formatDisplayDate } from '../utils/dateUtils';
@@ -27,7 +27,7 @@ export const ProfileScreen: React.FC = () => {
   if (!currentUser) return null;
 
   const handleLogout = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to log out of your session?', [
+    Alert.alert('Sign Out', 'Conclude your authenticated session?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign Out',
@@ -41,8 +41,8 @@ export const ProfileScreen: React.FC = () => {
 
   const handleResetData = async () => {
     Alert.alert(
-      'Reset Demo Data',
-      'This will reset all attendance records and users to their default test values. This is ideal for testing role workflows from scratch.',
+      'Reset Demo Baseline',
+      'This will restore all employee profiles and attendance records to baseline test scenarios. Ideal for fresh walkthroughs.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -52,7 +52,7 @@ export const ProfileScreen: React.FC = () => {
             setResetting(true);
             await resetAllAttendanceData();
             setResetting(false);
-            Alert.alert('Success', 'Demo data has been restored to default state.');
+            Alert.alert('Restored', 'Baseline demonstration records reloaded.');
           },
         },
       ]
@@ -64,8 +64,8 @@ export const ProfileScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Account & Settings</Text>
-          <Text style={styles.subtitle}>Session management and system tools</Text>
+          <Text style={styles.title}>Account Governance</Text>
+          <Text style={styles.subtitle}>Session management and evaluator tools</Text>
         </View>
 
         {/* User Card */}
@@ -89,17 +89,17 @@ export const ProfileScreen: React.FC = () => {
 
           <View style={styles.infoGrid}>
             <View style={styles.infoCol}>
-              <Text style={styles.infoLabel}>Role ID</Text>
+              <Text style={styles.infoLabel}>SECURITY ID</Text>
               <Text style={styles.infoVal}>{currentUser.id}</Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.infoCol}>
-              <Text style={styles.infoLabel}>Department</Text>
+              <Text style={styles.infoLabel}>DEPARTMENT</Text>
               <Text style={styles.infoVal}>{currentUser.department}</Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.infoCol}>
-              <Text style={styles.infoLabel}>Joined</Text>
+              <Text style={styles.infoLabel}>APPOINTED</Text>
               <Text style={styles.infoVal}>
                 {currentUser.joinedDate ? formatDisplayDate(currentUser.joinedDate).slice(-4) : '2024'}
               </Text>
@@ -107,11 +107,11 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Quick Role Switcher for Assessment Reviewers */}
+        {/* Quick Role Switcher for HR Assessment Reviewers */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Switch Role (Evaluator Tool)</Text>
+          <Text style={styles.sectionTitle}>EVALUATOR ROLE SWITCHER</Text>
           <Text style={styles.sectionDesc}>
-            Instantly switch accounts without re-entering credentials:
+            Instantly shift security contexts without re-entering credentials:
           </Text>
 
           <View style={styles.switchGrid}>
@@ -126,7 +126,7 @@ export const ProfileScreen: React.FC = () => {
                     SHADOWS.subtle,
                   ]}
                   onPress={() => quickLogin(acc)}
-                  activeOpacity={0.7}
+                  activeOpacity={0.75}
                 >
                   <View style={styles.switchTop}>
                     <StatusBadge role={acc.role} size="sm" />
@@ -148,29 +148,29 @@ export const ProfileScreen: React.FC = () => {
 
         {/* System Administration & Diagnostics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>System Administration</Text>
+          <Text style={styles.sectionTitle}>DATA & MAINTENANCE</Text>
 
           <TouchableOpacity
             style={[styles.menuItem, SHADOWS.subtle]}
             onPress={handleResetData}
-            activeOpacity={0.7}
+            activeOpacity={0.75}
           >
             <View style={styles.menuLeft}>
-              <View style={[styles.menuIcon, { backgroundColor: COLORS.warningBg }]}>
-                <Ionicons name="refresh-circle" size={22} color={COLORS.warning} />
+              <View style={[styles.menuIcon, { backgroundColor: COLORS.pendingBg }]}>
+                <Ionicons name="reload-outline" size={18} color={COLORS.accentGold} />
               </View>
               <View>
-                <Text style={styles.menuTitle}>Reset Demo Data</Text>
-                <Text style={styles.menuSub}>Restore initial check-in records and users</Text>
+                <Text style={styles.menuTitle}>Restore Initial Seed Records</Text>
+                <Text style={styles.menuSub}>Reset check-ins and personnel records to baseline</Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
+            <Ionicons name="chevron-forward" size={16} color={COLORS.slateMuted} />
           </TouchableOpacity>
         </View>
 
         {/* Logout Button */}
         <Button
-          title="Sign Out"
+          title="Sign Out of Session"
           onPress={handleLogout}
           variant="danger"
           size="lg"
@@ -180,7 +180,7 @@ export const ProfileScreen: React.FC = () => {
         />
 
         <Text style={styles.versionText}>
-          Attendance Management System v1.0.0 • React Native & Expo
+          Cadence HR Platform v1.2.0 • React Native & Expo Engine
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.lg,
-    maxWidth: 600,
+    maxWidth: 580,
     width: '100%',
     alignSelf: 'center',
     paddingBottom: SPACING.xxxl,
@@ -204,17 +204,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
   },
   subtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   profileCard: {
     backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.xl,
+    borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     alignItems: 'center',
     marginBottom: SPACING.lg,
@@ -222,39 +223,40 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   avatar: {
-    width: 68,
-    height: 68,
+    width: 60,
+    height: 60,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
-    borderWidth: 2,
-    borderColor: '#C7D2FE',
+    borderWidth: 1.5,
+    borderColor: COLORS.borderStrong,
   },
   avatarText: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: COLORS.primary,
+    fontSize: 20,
+    fontFamily: FONTS.extraBold,
+    color: COLORS.textPrimary,
   },
   name: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 17,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   email: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   badgeWrap: {
-    marginTop: SPACING.sm,
+    marginTop: SPACING.xs,
     marginBottom: SPACING.md,
   },
   infoGrid: {
     flexDirection: 'row',
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.surfaceSubtle,
+    borderRadius: RADIUS.sm,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
     width: '100%',
@@ -266,14 +268,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoLabel: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: '500',
+    fontSize: 9,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.8,
     marginBottom: 2,
   },
   infoVal: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   divider: {
@@ -284,14 +287,16 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMuted,
+    letterSpacing: 1,
     marginBottom: 2,
   },
   sectionDesc: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMedium,
     marginBottom: SPACING.sm,
   },
   switchGrid: {
@@ -307,7 +312,8 @@ const styles = StyleSheet.create({
   },
   switchCardCurrent: {
     borderColor: COLORS.primary,
-    backgroundColor: '#FAF5FF',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
   },
   switchTop: {
     flexDirection: 'row',
@@ -316,13 +322,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   switchName: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   switchEmail: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
   },
   menuItem: {
     flexDirection: 'row',
@@ -330,10 +337,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: COLORS.surface,
     padding: SPACING.md,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,
     marginTop: SPACING.xs,
+    ...(Platform.OS === 'web' ? ({ cursor: 'pointer', userSelect: 'none' } as any) : {}),
   },
   menuLeft: {
     flexDirection: 'row',
@@ -342,26 +350,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: RADIUS.md,
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   menuTitle: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13,
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   menuSub: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   versionText: {
-    fontSize: 11,
-    color: COLORS.textMuted,
+    fontSize: 10,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMuted,
     textAlign: 'center',
     marginTop: SPACING.lg,
+    letterSpacing: 0.5,
   },
 });

@@ -11,13 +11,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { Input } from '../components/Input';
 import { EmptyState } from '../components/EmptyState';
 import { StatusBadge } from '../components/StatusBadge';
 import { getTodayDateString, getRecentDateStrings, formatDisplayDate } from '../utils/dateUtils';
-import { AttendanceRecord, UserRole } from '../types';
 
 interface AttendanceRecordsScreenProps {
   route?: any;
@@ -36,11 +35,8 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
 
   if (!currentUser) return null;
 
-  // Enforce role scoping from AttendanceContext:
-  // Admin gets all; Senior Staff gets only staff; Staff gets only own.
   const scopedRecords = getScopedRecords(currentUser);
 
-  // Filtered records
   const filtered = useMemo(() => {
     return filterRecords(scopedRecords, searchQuery, selectedDate, selectedRole);
   }, [scopedRecords, searchQuery, selectedDate, selectedRole, filterRecords]);
@@ -55,11 +51,10 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
       return [
         { label: 'All Roles', value: 'all' },
         { label: 'Staff', value: 'staff' },
-        { label: 'Senior Staff', value: 'senior_staff' },
+        { label: 'Senior Lead', value: 'senior_staff' },
         { label: 'Admin', value: 'admin' },
       ];
     }
-    // Senior Staff can only view Staff
     return [{ label: 'Staff Only', value: 'staff' }];
   }, [currentUser.role]);
 
@@ -80,8 +75,8 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
             <Text style={styles.title}>Attendance Records</Text>
             <Text style={styles.subtitle}>
               {currentUser.role === 'admin'
-                ? 'Showing records for all staff, senior staff & admin'
-                : 'Showing records strictly for Staff members'}
+                ? 'Comprehensive enterprise attendance registry'
+                : 'Operational staff attendance registry'}
             </Text>
           </View>
           <View style={styles.badgeWrap}>
@@ -104,7 +99,7 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
 
         {/* Filter Pills - Dates */}
         <View style={styles.filterSection}>
-          <Text style={styles.filterLabel}>Date Filter:</Text>
+          <Text style={styles.filterLabel}>TIMEFRAME</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -112,7 +107,7 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
           >
             {recentDates.map((dateVal) => {
               const isSelected = selectedDate === dateVal;
-              let label = 'All Dates';
+              let label = 'All History';
               if (dateVal === getTodayDateString()) {
                 label = 'Today';
               } else if (dateVal !== 'all') {
@@ -137,7 +132,7 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
         {/* Filter Pills - Roles (Admin only) */}
         {currentUser.role === 'admin' && (
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Role Filter:</Text>
+            <Text style={styles.filterLabel}>ROLE SCOPE</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -164,12 +159,12 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
         {/* Active Filters Summary Bar */}
         <View style={styles.summaryBar}>
           <Text style={styles.summaryCount}>
-            Found <Text style={styles.countBold}>{filtered.length}</Text> record(s)
+            Found <Text style={styles.countBold}>{filtered.length}</Text> shift record(s)
           </Text>
           {hasActiveFilters && (
             <TouchableOpacity onPress={clearFilters} style={styles.clearBtn}>
-              <Ionicons name="refresh" size={14} color={COLORS.danger} />
-              <Text style={styles.clearText}>Reset Filters</Text>
+              <Ionicons name="refresh" size={13} color={COLORS.danger} />
+              <Text style={styles.clearText}>Clear Filters</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -185,9 +180,9 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
           ListEmptyComponent={
             <EmptyState
               icon="search-outline"
-              title="No records match your criteria"
-              description="Try adjusting your search query, date filter, or role filter."
-              actionTitle={hasActiveFilters ? 'Clear All Filters' : undefined}
+              title="No records match filter criteria"
+              description="Refine your search term or select an alternate date timeframe."
+              actionTitle={hasActiveFilters ? 'Reset Filters' : undefined}
               onActionPress={clearFilters}
             />
           }
@@ -204,7 +199,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    maxWidth: 750,
+    maxWidth: 650,
     width: '100%',
     alignSelf: 'center',
   },
@@ -214,18 +209,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.md,
-    paddingBottom: SPACING.sm,
+    paddingBottom: SPACING.xs,
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
-    maxWidth: 280,
+    maxWidth: 290,
   },
   badgeWrap: {
     alignSelf: 'flex-start',
@@ -241,22 +237,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
-    marginVertical: 4,
+    marginVertical: 3,
   },
   filterLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.textSecondary,
+    fontSize: 9,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.8,
     marginRight: 8,
     minWidth: 70,
   },
   filterPillsRow: {
-    gap: 8,
+    gap: 6,
     paddingVertical: 2,
   },
   pill: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 5,
+    paddingHorizontal: 11,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
@@ -267,12 +264,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   pillText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMedium,
   },
   pillTextSelected: {
     color: COLORS.textInverse,
+    fontFamily: FONTS.bold,
   },
   summaryBar: {
     flexDirection: 'row',
@@ -286,11 +284,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   summaryCount: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
+    fontSize: 12,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMedium,
   },
   countBold: {
-    fontWeight: '800',
+    fontFamily: FONTS.bold,
     color: COLORS.textPrimary,
   },
   clearBtn: {
@@ -299,8 +298,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   clearText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontFamily: FONTS.bold,
     color: COLORS.danger,
   },
   listContent: {

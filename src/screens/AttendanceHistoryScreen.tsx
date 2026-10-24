@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { EmptyState } from '../components/EmptyState';
 import { Input } from '../components/Input';
@@ -25,10 +25,8 @@ export const AttendanceHistoryScreen: React.FC = () => {
 
   if (!currentUser) return null;
 
-  // Chronological order, latest first
   const userRecords = getUserRecords(currentUser.id);
 
-  // Filtered list
   const filtered = useMemo(() => {
     return userRecords.filter((rec) => {
       if (searchDate.trim()) {
@@ -42,7 +40,6 @@ export const AttendanceHistoryScreen: React.FC = () => {
     });
   }, [userRecords, searchDate, statusFilter]);
 
-  // Compute personal summary metrics
   const totalDays = userRecords.length;
   const completedDays = userRecords.filter((r) => r.status === 'checked_out').length;
 
@@ -52,38 +49,38 @@ export const AttendanceHistoryScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>My Attendance History</Text>
+            <Text style={styles.title}>Personal Shift Log</Text>
             <Text style={styles.subtitle}>
-              Personal log for {currentUser.name}
+              Historical ledger for {currentUser.name}
             </Text>
           </View>
           <StatusBadge role={currentUser.role} size="sm" />
         </View>
 
-        {/* Summary Card */}
+        {/* Telemetry Summary Card */}
         <View style={[styles.summaryCard, SHADOWS.card]}>
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>{totalDays}</Text>
-            <Text style={styles.statLabel}>Total Days</Text>
+            <Text style={styles.statLabel}>TOTAL SHIFTS</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: COLORS.success }]}>{completedDays}</Text>
-            <Text style={styles.statLabel}>Completed Shifts</Text>
+            <Text style={[styles.statNumber, { color: COLORS.checkedInText }]}>{completedDays}</Text>
+            <Text style={styles.statLabel}>COMPLETED</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: COLORS.primary }]}>
+            <Text style={[styles.statNumber, { color: COLORS.primaryAccent }]}>
               {totalDays > 0 ? `${Math.round((completedDays / totalDays) * 100)}%` : '0%'}
             </Text>
-            <Text style={styles.statLabel}>Completion Rate</Text>
+            <Text style={styles.statLabel}>RELIABILITY</Text>
           </View>
         </View>
 
         {/* Filter Bar */}
         <View style={styles.filterRow}>
           <Input
-            placeholder="Filter by date (YYYY-MM-DD)..."
+            placeholder="Search by date (YYYY-MM-DD)..."
             value={searchDate}
             onChangeText={setSearchDate}
             leftIcon="calendar-outline"
@@ -98,7 +95,7 @@ export const AttendanceHistoryScreen: React.FC = () => {
               onPress={() => setStatusFilter('all')}
             >
               <Text style={[styles.pillText, statusFilter === 'all' && styles.pillTextActive]}>
-                All
+                All Logs
               </Text>
             </TouchableOpacity>
 
@@ -116,7 +113,7 @@ export const AttendanceHistoryScreen: React.FC = () => {
               onPress={() => setStatusFilter('checked_in')}
             >
               <Text style={[styles.pillText, statusFilter === 'checked_in' && styles.pillTextActive]}>
-                Incomplete
+                In Progress
               </Text>
             </TouchableOpacity>
           </View>
@@ -133,8 +130,8 @@ export const AttendanceHistoryScreen: React.FC = () => {
           ListEmptyComponent={
             <EmptyState
               icon="calendar-outline"
-              title="No attendance records found"
-              description="Your attendance logs will appear here once recorded."
+              title="No shift records found"
+              description="Historical logs will appear here once recorded on your account."
               actionTitle={searchDate || statusFilter !== 'all' ? 'Reset Filters' : undefined}
               onActionPress={() => {
                 setSearchDate('');
@@ -155,7 +152,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    maxWidth: 700,
+    maxWidth: 620,
     width: '100%',
     alignSelf: 'center',
   },
@@ -165,16 +162,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.md,
-    paddingBottom: SPACING.sm,
+    paddingBottom: SPACING.xs,
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
   },
   subtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.slateMuted,
     marginTop: 2,
   },
   summaryCard: {
@@ -182,7 +180,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     marginHorizontal: SPACING.lg,
     marginVertical: SPACING.sm,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -193,14 +191,16 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 20,
-    fontWeight: '800',
+    fontFamily: FONTS.extraBold,
     color: COLORS.textPrimary,
+    letterSpacing: -0.5,
   },
   statLabel: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-    marginTop: 2,
+    fontSize: 9,
+    fontFamily: FONTS.bold,
+    color: COLORS.slateMedium,
+    letterSpacing: 0.8,
+    marginTop: 3,
   },
   statDivider: {
     width: 1,
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   filterPills: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     marginBottom: SPACING.sm,
   },
   pill: {
@@ -231,12 +231,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   pillText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    color: COLORS.slateMedium,
   },
   pillTextActive: {
     color: COLORS.textInverse,
+    fontFamily: FONTS.bold,
   },
   listContent: {
     padding: SPACING.lg,

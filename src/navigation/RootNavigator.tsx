@@ -3,7 +3,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
-import { COLORS } from '../constants/theme';
+import { COLORS, FONTS } from '../constants/theme';
 
 // Screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -18,7 +18,7 @@ export const RootNavigator: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="small" color={COLORS.primary} />
       </View>
     );
   }
@@ -42,11 +42,16 @@ export const RootNavigator: React.FC = () => {
                 headerShown: true,
                 title: 'Attendance History',
                 headerBackTitle: 'Back',
-                headerTintColor: COLORS.primary,
+                headerTintColor: COLORS.textPrimary,
                 headerTitleStyle: {
-                  fontWeight: '700',
+                  fontFamily: FONTS.bold,
+                  fontSize: 16,
                   color: COLORS.textPrimary,
                 },
+                headerStyle: {
+                  backgroundColor: COLORS.surface,
+                },
+                headerShadowVisible: false,
               }}
             />
           </>

@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, RADIUS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -63,6 +63,8 @@ export const Button: React.FC<ButtonProps> = ({
         return styles.textOutline;
       case 'ghost':
         return styles.textGhost;
+      case 'secondary':
+        return styles.textSecondary;
       default:
         return styles.textSolid;
     }
@@ -71,12 +73,13 @@ export const Button: React.FC<ButtonProps> = ({
   const getIconColor = () => {
     if (variant === 'outline') return COLORS.primary;
     if (variant === 'ghost') return COLORS.textSecondary;
+    if (variant === 'secondary') return COLORS.textPrimary;
     return COLORS.textInverse;
   };
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.82}
       onPress={onPress}
       disabled={disabled || loading}
       style={[
@@ -98,7 +101,7 @@ export const Button: React.FC<ButtonProps> = ({
           {icon && iconPosition === 'left' ? (
             <Ionicons
               name={icon}
-              size={size === 'sm' ? 16 : size === 'lg' ? 22 : 18}
+              size={size === 'sm' ? 15 : size === 'lg' ? 20 : 17}
               color={getIconColor()}
               style={styles.iconLeft}
             />
@@ -118,7 +121,7 @@ export const Button: React.FC<ButtonProps> = ({
           {icon && iconPosition === 'right' ? (
             <Ionicons
               name={icon}
-              size={size === 'sm' ? 16 : size === 'lg' ? 22 : 18}
+              size={size === 'sm' ? 15 : size === 'lg' ? 20 : 17}
               color={getIconColor()}
               style={styles.iconRight}
             />
@@ -140,7 +143,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   contentRow: {
     flexDirection: 'row',
@@ -155,12 +158,12 @@ const styles = StyleSheet.create({
   },
   // Sizes
   sm: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 7,
+    paddingHorizontal: 13,
   },
   md: {
     paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
   },
   lg: {
     paddingVertical: 15,
@@ -169,9 +172,13 @@ const styles = StyleSheet.create({
   // Variants
   btnPrimary: {
     backgroundColor: COLORS.primary,
+    borderWidth: 1,
+    borderColor: '#000000',
   },
   btnSecondary: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   btnSuccess: {
     backgroundColor: COLORS.success,
@@ -182,32 +189,36 @@ const styles = StyleSheet.create({
   btnOutline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.borderStrong,
   },
   btnGhost: {
     backgroundColor: 'transparent',
   },
   // Text
   text: {
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     textAlign: 'center',
+    letterSpacing: 0.2,
   },
   text_sm: {
-    fontSize: 13,
+    fontSize: 12,
   },
   text_md: {
-    fontSize: 15,
+    fontSize: 14,
   },
   text_lg: {
-    fontSize: 16,
+    fontSize: 15,
   },
   textSolid: {
     color: COLORS.textInverse,
   },
   textOutline: {
-    color: COLORS.primary,
+    color: COLORS.textPrimary,
   },
   textGhost: {
     color: COLORS.textSecondary,
+  },
+  textSecondary: {
+    color: COLORS.textPrimary,
   },
 });

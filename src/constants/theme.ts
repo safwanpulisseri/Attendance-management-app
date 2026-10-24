@@ -1,57 +1,92 @@
+export const FONTS = {
+  regular: 'PlusJakartaSans_400Regular',
+  medium: 'PlusJakartaSans_500Medium',
+  semiBold: 'PlusJakartaSans_600SemiBold',
+  bold: 'PlusJakartaSans_700Bold',
+  extraBold: 'PlusJakartaSans_800ExtraBold',
+};
+
 export const COLORS = {
-  // Brand & Accents
-  primary: '#4F46E5', // Indigo 600
-  primaryDark: '#4338CA',
-  primaryLight: '#EEF2FF',
-  secondary: '#0EA5E9', // Sky 500
-  secondaryLight: '#E0F2FE',
-  accent: '#8B5CF6', // Purple 500
+  // Bespoke Executive Charcoal & Titanium Palette
+  obsidian: '#090D16',
+  charcoal: '#111827',
+  slateDark: '#1E293B',
+  slateMedium: '#475569',
+  slateLight: '#64748B',
+  slateMuted: '#94A3B8',
 
-  // Neutral Backgrounds & Surfaces
-  background: '#F8FAFC', // Slate 50
+  // Clean Minimal Surfaces
+  background: '#F8FAFC',
   surface: '#FFFFFF',
-  card: '#FFFFFF',
-  surfaceHover: '#F1F5F9',
-  border: '#E2E8F0', // Slate 200
-  borderDark: '#CBD5E1',
+  surfaceSubtle: '#F1F5F9',
+  surfaceHover: '#EAEEF4',
+  border: '#E2E8F0',
+  borderStrong: '#CBD5E1',
 
-  // Typography
-  textPrimary: '#0F172A', // Slate 900
-  textSecondary: '#475569', // Slate 600
-  textMuted: '#94A3B8', // Slate 400
-  textInverse: '#FFFFFF',
+  // Primary Action Accent
+  primary: '#0F172A', // Obsidian Black for primary actions
+  primaryContrast: '#FFFFFF',
+  primaryAccent: '#2563EB', // Precision Royal Blue
+  primaryAccentLight: '#EFF6FF',
+  primaryAccentBorder: '#BFDBFE',
+
+  // Secondary Accents
+  accentGold: '#D97706',
+  accentGoldLight: '#FEF3C7',
 
   // Status Indicators
-  success: '#10B981', // Emerald 500
-  successBg: '#ECFDF5',
-  successBorder: '#A7F3D0',
-  successText: '#065F46',
+  checkedInBg: '#ECFDF5',
+  checkedInText: '#065F46',
+  checkedInBorder: '#A7F3D0',
+  checkedInDot: '#10B981',
 
-  warning: '#F59E0B', // Amber 500
+  checkedOutBg: '#F8FAFC',
+  checkedOutText: '#334155',
+  checkedOutBorder: '#E2E8F0',
+  checkedOutDot: '#64748B',
+
+  pendingBg: '#FFFBEB',
+  pendingText: '#92400E',
+  pendingBorder: '#FDE68A',
+  pendingDot: '#F59E0B',
+
+  dangerBg: '#FEF2F2',
+  dangerText: '#991B1B',
+  dangerBorder: '#FECACA',
+  danger: '#DC2626',
+
+  // Role Pill Styling
+  roleAdmin: '#6D28D9',
+  roleAdminBg: '#F5F3FF',
+  roleAdminBorder: '#DDD6FE',
+
+  roleSenior: '#1D4ED8',
+  roleSeniorBg: '#EFF6FF',
+  roleSeniorBorder: '#BFDBFE',
+
+  roleStaff: '#047857',
+  roleStaffBg: '#ECFDF5',
+  roleStaffBorder: '#A7F3D0',
+
+  // Semantic Typography
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
+  textInverse: '#FFFFFF',
+
+  // Component Helpers
+  success: '#059669',
+  secondary: '#2563EB',
+  warning: '#D97706',
   warningBg: '#FFFBEB',
   warningBorder: '#FDE68A',
   warningText: '#92400E',
-
-  danger: '#EF4444', // Red 500
-  dangerBg: '#FEF2F2',
-  dangerBorder: '#FECACA',
-  dangerText: '#991B1B',
-
-  info: '#3B82F6', // Blue 500
-  infoBg: '#EFF6FF',
-  infoBorder: '#BFDBFE',
-  infoText: '#1E40AF',
-
-  // Role Badge Colors
-  roleAdmin: '#7C3AED',
-  roleAdminBg: '#F3E8FF',
-  roleSenior: '#2563EB',
-  roleSeniorBg: '#DBEAFE',
-  roleStaff: '#0D9488',
-  roleStaffBg: '#CCFBF1',
+  primaryLight: '#F1F5F9',
+  primaryDark: '#090D16',
 };
 
 export const SPACING = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 12,
@@ -59,13 +94,15 @@ export const SPACING = {
   xl: 20,
   xxl: 24,
   xxxl: 32,
+  huge: 40,
 };
 
 export const RADIUS = {
-  sm: 6,
-  md: 10,
-  lg: 14,
-  xl: 18,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 22,
   full: 9999,
 };
 
@@ -73,22 +110,22 @@ export const SHADOWS = {
   subtle: {
     shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.04,
     shadowRadius: 3,
-    elevation: 2,
+    elevation: 1,
   },
   card: {
     shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.07,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
   },
   elevated: {
     shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 14,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 4,
   },
 };

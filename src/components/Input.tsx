@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, RADIUS, SPACING } from '../constants/theme';
+import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -52,15 +52,15 @@ export const Input: React.FC<InputProps> = ({
         {leftIcon ? (
           <Ionicons
             name={leftIcon}
-            size={20}
-            color={error ? COLORS.danger : isFocused ? COLORS.primary : COLORS.textMuted}
+            size={18}
+            color={error ? COLORS.danger : isFocused ? COLORS.primary : COLORS.slateMuted}
             style={styles.leftIcon}
           />
         ) : null}
 
         <TextInput
           style={styles.textInput}
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={COLORS.slateMuted}
           secureTextEntry={isPassword && !isPasswordVisible}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -75,8 +75,8 @@ export const Input: React.FC<InputProps> = ({
           >
             <Ionicons
               name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-              size={20}
-              color={COLORS.textMuted}
+              size={18}
+              color={COLORS.slateMuted}
             />
           </TouchableOpacity>
         ) : rightIcon ? (
@@ -85,7 +85,7 @@ export const Input: React.FC<InputProps> = ({
             disabled={!onRightIconPress}
             style={styles.rightIcon}
           >
-            <Ionicons name={rightIcon} size={20} color={COLORS.textMuted} />
+            <Ionicons name={rightIcon} size={18} color={COLORS.slateMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -100,24 +100,27 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    fontFamily: FONTS.semiBold,
+    color: COLORS.slateMedium,
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
     marginBottom: 6,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.surface,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
-    height: 50,
+    height: 48,
   },
   inputFocused: {
     borderColor: COLORS.primary,
-    backgroundColor: '#FAF5FF',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
   },
   inputError: {
     borderColor: COLORS.danger,
@@ -131,14 +134,15 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
+    fontFamily: FONTS.medium,
     color: COLORS.textPrimary,
     height: '100%',
   },
   errorText: {
-    fontSize: 12,
+    fontSize: 11,
+    fontFamily: FONTS.medium,
     color: COLORS.danger,
     marginTop: 4,
-    fontWeight: '500',
   },
 });
