@@ -9,7 +9,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SPACING } from '../constants/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -31,6 +32,7 @@ export const Input: React.FC<InputProps> = ({
   containerStyle,
   ...rest
 }) => {
+  const { colors } = useTheme();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -40,27 +42,31 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <View style={[styles.container, containerStyle]}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.slateMedium }]}>{label}</Text> : null}
 
       <View
         style={[
           styles.inputContainer,
-          isFocused && styles.inputFocused,
-          !!error && styles.inputError,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+          isFocused && [styles.inputFocused, { borderColor: colors.primaryAccent, backgroundColor: colors.surfaceHover }],
+          !!error && [styles.inputError, { borderColor: colors.danger, backgroundColor: colors.dangerBg }],
         ]}
       >
         {leftIcon ? (
           <Ionicons
             name={leftIcon}
             size={18}
-            color={error ? COLORS.danger : isFocused ? COLORS.primary : COLORS.slateMuted}
+            color={error ? colors.danger : isFocused ? colors.primaryAccent : colors.slateMuted}
             style={styles.leftIcon}
           />
         ) : null}
 
         <TextInput
-          style={styles.textInput}
-          placeholderTextColor={COLORS.slateMuted}
+          style={[styles.textInput, { color: colors.textPrimary }]}
+          placeholderTextColor={colors.slateMuted}
           secureTextEntry={isPassword && !isPasswordVisible}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -76,7 +82,7 @@ export const Input: React.FC<InputProps> = ({
             <Ionicons
               name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
               size={18}
-              color={COLORS.slateMuted}
+              color={colors.slateMuted}
             />
           </TouchableOpacity>
         ) : rightIcon ? (
@@ -85,12 +91,12 @@ export const Input: React.FC<InputProps> = ({
             disabled={!onRightIconPress}
             style={styles.rightIcon}
           >
-            <Ionicons name={rightIcon} size={18} color={COLORS.slateMuted} />
+            <Ionicons name={rightIcon} size={18} color={colors.slateMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
 
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text> : null}
     </View>
   );
 };
@@ -102,7 +108,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 11,
     fontFamily: FONTS.semiBold,
-    color: COLORS.slateMedium,
     textTransform: 'uppercase',
     letterSpacing: 0.7,
     marginBottom: 6,
@@ -110,21 +115,16 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     height: 48,
   },
   inputFocused: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
   },
   inputError: {
-    borderColor: COLORS.danger,
-    backgroundColor: COLORS.dangerBg,
+    borderWidth: 1,
   },
   leftIcon: {
     marginRight: 10,
@@ -136,13 +136,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontFamily: FONTS.medium,
-    color: COLORS.textPrimary,
     height: '100%',
   },
   errorText: {
     fontSize: 11,
     fontFamily: FONTS.medium,
-    color: COLORS.danger,
     marginTop: 4,
   },
 });

@@ -11,7 +11,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
@@ -22,6 +24,7 @@ import { formatDisplayDate } from '../utils/dateUtils';
 export const UserManagementScreen: React.FC = () => {
   const { currentUser, users } = useAuth();
   const { records } = useAttendance();
+  const { colors } = useTheme();
 
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
@@ -29,7 +32,7 @@ export const UserManagementScreen: React.FC = () => {
 
   if (!currentUser || currentUser.role !== 'admin') {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <EmptyState
           icon="shield-outline"
           title="Administrative Privilege Required"
@@ -58,33 +61,35 @@ export const UserManagementScreen: React.FC = () => {
 
   const getUserStats = (user: User) => {
     const userRecs = records.filter((r) => r.userId === user.id);
-    const completed = userRecs.filter((r) => r.status === 'checked_out').length;
     return {
       totalRecords: userRecs.length,
-      completed,
+      lastActive: userRecs.length > 0 ? userRecs[0].date : 'Never',
     };
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Workforce Directory</Text>
-            <Text style={styles.subtitle}>
-              Manage organization personnel & permissions
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Workforce Roster</Text>
+            <Text style={[styles.subtitle, { color: colors.slateMuted }]}>
+              Organizational identity directory ({users.length} enrolled)
             </Text>
           </View>
-          <View style={styles.userCountPill}>
-            <Text style={styles.userCountText}>{users.length} Active Profiles</Text>
+          <View style={styles.headerRight}>
+            <View style={[styles.userCountPill, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.userCountText, { color: colors.slateDark }]}>{filteredUsers.length} Filtered</Text>
+            </View>
+            <ThemeToggle variant="compact" />
           </View>
         </View>
 
-        {/* Search */}
+        {/* Filter Section */}
         <View style={styles.searchSection}>
           <Input
-            placeholder="Search by name, email, department..."
+            placeholder="Search by name, ID, department..."
             value={search}
             onChangeText={setSearch}
             leftIcon="search-outline"
@@ -93,44 +98,114 @@ export const UserManagementScreen: React.FC = () => {
             containerStyle={styles.searchInput}
           />
 
-          {/* Role Filter Pills */}
           <View style={styles.pillsRow}>
-            {(['all', 'admin', 'senior_staff', 'staff'] as const).map((r) => {
-              const isSelected = roleFilter === r;
-              let label = 'All';
-              if (r === 'admin') label = 'Admins';
-              if (r === 'senior_staff') label = 'Senior Leads';
-              if (r === 'staff') label = 'Staff';
+            <TouchableOpacity
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                roleFilter === 'all' && [styles.pillSelected, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
+              onPress={() => setRoleFilter('all')}
+            >
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  roleFilter === 'all' && [styles.pillTextSelected, { color: colors.textInverse }],
+                ]}
+              >
+                All Roles
+              </Text>
+            </TouchableOpacity>
 
-              return (
-                <TouchableOpacity
-                  key={r}
-                  style={[styles.pill, isSelected && styles.pillSelected]}
-                  onPress={() => setRoleFilter(r)}
-                >
-                  <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
-                    {label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+            <TouchableOpacity
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                roleFilter === 'admin' && [styles.pillSelected, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
+              onPress={() => setRoleFilter('admin')}
+            >
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  roleFilter === 'admin' && [styles.pillTextSelected, { color: colors.textInverse }],
+                ]}
+              >
+                Admins
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                roleFilter === 'senior_staff' && [styles.pillSelected, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
+              onPress={() => setRoleFilter('senior_staff')}
+            >
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  roleFilter === 'senior_staff' && [styles.pillTextSelected, { color: colors.textInverse }],
+                ]}
+              >
+                Senior Staff
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                roleFilter === 'staff' && [styles.pillSelected, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
+              onPress={() => setRoleFilter('staff')}
+            >
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  roleFilter === 'staff' && [styles.pillTextSelected, { color: colors.textInverse }],
+                ]}
+              >
+                Staff
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Users List */}
+        {/* User List */}
         <FlatList
           data={filteredUsers}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={[styles.userCard, SHADOWS.card]}
               activeOpacity={0.7}
               onPress={() => setSelectedUser(item)}
+              style={[
+                styles.userCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+                SHADOWS.card,
+              ]}
             >
               <View style={styles.userCardLeft}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>
+                <View
+                  style={[
+                    styles.avatar,
+                    {
+                      backgroundColor: colors.surfaceSubtle,
+                      borderColor: colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.avatarText, { color: colors.textPrimary }]}>
                     {item.name
                       .split(' ')
                       .map((n) => n[0])
@@ -140,18 +215,20 @@ export const UserManagementScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{item.name}</Text>
-                  <Text style={styles.userEmail}>{item.email}</Text>
+                  <Text style={[styles.userName, { color: colors.textPrimary }]}>{item.name}</Text>
+                  <Text style={[styles.userEmail, { color: colors.slateMuted }]}>{item.email}</Text>
                   <View style={styles.userMeta}>
                     <StatusBadge role={item.role} size="sm" />
-                    <Text style={styles.deptText}> • {item.department}</Text>
+                    {item.department ? (
+                      <Text style={[styles.deptText, { color: colors.slateMedium }]}> • {item.department}</Text>
+                    ) : null}
                   </View>
                 </View>
               </View>
 
               <View style={styles.userCardRight}>
-                <Text style={styles.userIdText}>{item.id}</Text>
-                <Ionicons name="chevron-forward" size={15} color={COLORS.slateMuted} />
+                <Text style={[styles.userIdText, { color: colors.slateMuted }]}>{item.id}</Text>
+                <Ionicons name="chevron-forward" size={15} color={colors.slateMuted} />
               </View>
             </TouchableOpacity>
           )}
@@ -177,12 +254,29 @@ export const UserManagementScreen: React.FC = () => {
           onRequestClose={() => setSelectedUser(null)}
         >
           <View style={styles.modalOverlay}>
-            <View style={[styles.modalCard, SHADOWS.elevated]}>
+            <View
+              style={[
+                styles.modalCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+                SHADOWS.elevated,
+              ]}
+            >
               {selectedUser && (
                 <>
                   <View style={styles.modalHeader}>
-                    <View style={styles.modalAvatar}>
-                      <Text style={styles.modalAvatarText}>
+                    <View
+                      style={[
+                        styles.modalAvatar,
+                        {
+                          backgroundColor: colors.surfaceSubtle,
+                          borderColor: colors.border,
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.modalAvatarText, { color: colors.textPrimary }]}>
                         {selectedUser.name
                           .split(' ')
                           .map((n) => n[0])
@@ -190,34 +284,34 @@ export const UserManagementScreen: React.FC = () => {
                           .join('')}
                       </Text>
                     </View>
-                    <Text style={styles.modalName}>{selectedUser.name}</Text>
-                    <Text style={styles.modalEmail}>{selectedUser.email}</Text>
+                    <Text style={[styles.modalName, { color: colors.textPrimary }]}>{selectedUser.name}</Text>
+                    <Text style={[styles.modalEmail, { color: colors.slateMuted }]}>{selectedUser.email}</Text>
                     <View style={{ marginTop: 8 }}>
                       <StatusBadge role={selectedUser.role} size="md" />
                     </View>
                   </View>
 
-                  <View style={styles.modalDetails}>
+                  <View style={[styles.modalDetails, { backgroundColor: colors.surfaceSubtle }]}>
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>PROFILE IDENTIFIER</Text>
-                      <Text style={styles.detailValue}>{selectedUser.id}</Text>
+                      <Text style={[styles.detailLabel, { color: colors.slateMedium }]}>PROFILE IDENTIFIER</Text>
+                      <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{selectedUser.id}</Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>DEPARTMENT</Text>
-                      <Text style={styles.detailValue}>{selectedUser.department}</Text>
+                      <Text style={[styles.detailLabel, { color: colors.slateMedium }]}>DEPARTMENT</Text>
+                      <Text style={[styles.detailValue, { color: colors.textPrimary }]}>{selectedUser.department}</Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>APPOINTMENT DATE</Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={[styles.detailLabel, { color: colors.slateMedium }]}>APPOINTMENT DATE</Text>
+                      <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
                         {formatDisplayDate(selectedUser.joinedDate)}
                       </Text>
                     </View>
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>LIFETIME SHIFTS</Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={[styles.detailLabel, { color: colors.slateMedium }]}>LIFETIME SHIFTS</Text>
+                      <Text style={[styles.detailValue, { color: colors.textPrimary }]}>
                         {getUserStats(selectedUser).totalRecords} logged
                       </Text>
                     </View>
@@ -243,7 +337,6 @@ export const UserManagementScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   container: {
     flex: 1,
@@ -259,29 +352,30 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     paddingBottom: SPACING.xs,
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginRight: 28,
+  },
   title: {
     fontSize: 22,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   userCountPill: {
-    backgroundColor: COLORS.surfaceSubtle,
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   userCountText: {
     fontSize: 11,
     fontFamily: FONTS.bold,
-    color: COLORS.slateDark,
   },
   searchSection: {
     paddingHorizontal: SPACING.lg,
@@ -299,21 +393,14 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
-  pillSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
+  pillSelected: {},
   pillText: {
     fontSize: 11,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMedium,
   },
   pillTextSelected: {
-    color: COLORS.textInverse,
     fontFamily: FONTS.bold,
   },
   listContent: {
@@ -324,12 +411,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   userCardLeft: {
     flexDirection: 'row',
@@ -341,16 +426,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   avatarText: {
     fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   userInfo: {
     flex: 1,
@@ -358,12 +440,10 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 14,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   userEmail: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 1,
   },
   userMeta: {
@@ -374,7 +454,6 @@ const styles = StyleSheet.create({
   deptText: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMedium,
   },
   userCardRight: {
     alignItems: 'flex-end',
@@ -383,23 +462,20 @@ const styles = StyleSheet.create({
   userIdText: {
     fontSize: 10,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMuted,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: SPACING.xl,
   },
   modalCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     width: '100%',
     maxWidth: 400,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   modalHeader: {
     alignItems: 'center',
@@ -409,31 +485,25 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   modalAvatarText: {
     fontSize: 18,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
   },
   modalName: {
     fontSize: 17,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   modalEmail: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   modalDetails: {
-    backgroundColor: COLORS.surfaceSubtle,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     gap: 8,
@@ -446,12 +516,10 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.6,
   },
   detailValue: {
     fontSize: 12,
     fontFamily: FONTS.semiBold,
-    color: COLORS.textPrimary,
   },
 });

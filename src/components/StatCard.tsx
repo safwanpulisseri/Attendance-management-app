@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 
 interface StatCardProps {
   title: string;
@@ -18,33 +19,45 @@ export const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
   icon,
-  color = COLORS.slateDark,
-  bgColor = COLORS.surfaceSubtle,
+  color,
+  bgColor,
   subtitle,
   onPress,
   flex = 1,
 }) => {
+  const { colors } = useTheme();
   const Container = onPress ? TouchableOpacity : View;
+
+  const resolvedColor = color || colors.slateDark;
+  const resolvedBg = bgColor || colors.surfaceSubtle;
 
   return (
     <Container
       activeOpacity={0.75}
       onPress={onPress}
-      style={[styles.card, { flex }, SHADOWS.card]}
+      style={[
+        styles.card,
+        {
+          flex,
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+        SHADOWS.card,
+      ]}
     >
       <View style={styles.topRow}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, { color: colors.slateMedium }]} numberOfLines={1}>
           {title}
         </Text>
-        <View style={[styles.iconWrap, { backgroundColor: bgColor }]}>
-          <Ionicons name={icon} size={16} color={color} />
+        <View style={[styles.iconWrap, { backgroundColor: resolvedBg }]}>
+          <Ionicons name={icon} size={16} color={resolvedColor} />
         </View>
       </View>
 
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.value, { color: colors.textPrimary }]}>{value}</Text>
 
       {subtitle ? (
-        <Text style={styles.subtitle} numberOfLines={1}>
+        <Text style={[styles.subtitle, { color: colors.slateMuted }]} numberOfLines={1}>
           {subtitle}
         </Text>
       ) : null}
@@ -54,11 +67,9 @@ export const StatCard: React.FC<StatCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
     minWidth: 135,
     margin: SPACING.xs,
   },
@@ -78,13 +89,11 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 22,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
     letterSpacing: -0.5,
   },
   title: {
     fontSize: 11,
     fontFamily: FONTS.semiBold,
-    color: COLORS.slateMedium,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
     flex: 1,
@@ -93,7 +102,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 4,
   },
 });

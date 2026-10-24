@@ -10,11 +10,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatCard } from '../components/StatCard';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { EmptyState } from '../components/EmptyState';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { formatDisplayDate, getTodayDateString } from '../utils/dateUtils';
 
 interface SeniorStaffDashboardScreenProps {
@@ -26,6 +28,7 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
 }) => {
   const { currentUser } = useAuth();
   const { getStats, getScopedRecords } = useAttendance();
+  const { colors } = useTheme();
 
   if (!currentUser) return null;
 
@@ -35,50 +38,53 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
   const todayStaffRecords = scopedRecords.filter((r) => r.date === today);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.welcomeSubtitle}>TEAM COORDINATION</Text>
-            <Text style={styles.welcomeTitle}>Senior Staff Hub</Text>
+            <Text style={[styles.welcomeSubtitle, { color: colors.slateMuted }]}>TEAM COORDINATION</Text>
+            <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>Senior Staff Hub</Text>
             <View style={styles.badgeRow}>
               <StatusBadge role="senior_staff" size="sm" />
-              <Text style={styles.dateLabel}> • {formatDisplayDate(today)}</Text>
+              <Text style={[styles.dateLabel, { color: colors.slateMedium }]}> • {formatDisplayDate(today)}</Text>
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.profileBtn}
-            onPress={() => navigation.navigate('ProfileTab')}
-          >
-            <Ionicons name="shield-outline" size={20} color={COLORS.roleSenior} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <ThemeToggle />
+            <TouchableOpacity
+              style={[styles.profileBtn, { backgroundColor: colors.roleSeniorBg, borderColor: colors.roleSeniorBorder }]}
+              onPress={() => navigation.navigate('ProfileTab')}
+            >
+              <Ionicons name="shield-outline" size={18} color={colors.roleSenior} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Self Attendance Action Card */}
         <TouchableOpacity
-          style={[styles.selfActionBanner, SHADOWS.card]}
+          style={[styles.selfActionBanner, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}
           activeOpacity={0.8}
           onPress={() => navigation.navigate('MyAttendance')}
         >
           <View style={styles.selfActionLeft}>
-            <View style={styles.selfIconWrap}>
-              <Ionicons name="finger-print-outline" size={18} color={COLORS.textPrimary} />
+            <View style={[styles.selfIconWrap, { backgroundColor: colors.surfaceSubtle }]}>
+              <Ionicons name="finger-print-outline" size={18} color={colors.textPrimary} />
             </View>
             <View>
-              <Text style={styles.selfActionTitle}>Personal Shift Attendance</Text>
-              <Text style={styles.selfActionSub}>
+              <Text style={[styles.selfActionTitle, { color: colors.textPrimary }]}>Personal Shift Attendance</Text>
+              <Text style={[styles.selfActionSub, { color: colors.slateMuted }]}>
                 Record your own arrival or departure for today
               </Text>
             </View>
           </View>
-          <Ionicons name="chevron-forward" size={16} color={COLORS.slateMedium} />
+          <Ionicons name="chevron-forward" size={16} color={colors.slateMedium} />
         </TouchableOpacity>
 
         {/* Staff-Only Summary Cards */}
-        <Text style={styles.sectionHeading}>STAFF ATTENDANCE METRICS</Text>
-        <Text style={styles.sectionSub}>Scoped exclusively to operational staff members</Text>
+        <Text style={[styles.sectionHeading, { color: colors.slateMuted }]}>STAFF ATTENDANCE METRICS</Text>
+        <Text style={[styles.sectionSub, { color: colors.slateMedium }]}>Scoped exclusively to operational staff members</Text>
 
         <View style={styles.statsGrid}>
           <View style={styles.statsRow}>
@@ -86,7 +92,7 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
               title="ASSIGNED STAFF"
               value={stats.totalStaff}
               icon="people-outline"
-              color={COLORS.roleStaff}
+              color={colors.roleStaff}
               subtitle="Staff under supervision"
               onPress={() => navigation.navigate('Records')}
             />
@@ -94,7 +100,7 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
               title="STAFF CHECKED IN"
               value={stats.checkedInToday}
               icon="checkmark-circle-outline"
-              color={COLORS.success}
+              color={colors.success}
               subtitle="Currently on shift"
             />
           </View>
@@ -104,14 +110,14 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
               title="STAFF PENDING"
               value={stats.notCheckedInToday}
               icon="time-outline"
-              color={COLORS.accentGold}
+              color={colors.accentGold}
               subtitle="Not yet arrived"
             />
             <StatCard
               title="STAFF CHECKED OUT"
               value={stats.checkedOutToday}
               icon="log-out-outline"
-              color={COLORS.secondary}
+              color={colors.secondary}
               subtitle="Shift completed today"
             />
           </View>
@@ -121,15 +127,15 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
         <View style={styles.recentSection}>
           <View style={styles.sectionHeaderRow}>
             <View>
-              <Text style={styles.sectionHeading}>TODAY'S TEAM PRESENCE</Text>
-              <Text style={styles.sectionSub}>Live check-ins for current shift</Text>
+              <Text style={[styles.sectionHeading, { color: colors.slateMuted }]}>TODAY'S TEAM PRESENCE</Text>
+              <Text style={[styles.sectionSub, { color: colors.slateMedium }]}>Live check-ins for current shift</Text>
             </View>
             <TouchableOpacity
               onPress={() => navigation.navigate('Records')}
               style={styles.seeAllBtn}
             >
-              <Text style={styles.seeAllText}>Staff History</Text>
-              <Ionicons name="arrow-forward" size={13} color={COLORS.primary} />
+              <Text style={[styles.seeAllText, { color: colors.primaryAccent }]}>Staff History</Text>
+              <Ionicons name="arrow-forward" size={13} color={colors.primaryAccent} />
             </TouchableOpacity>
           </View>
 
@@ -153,7 +159,6 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     padding: SPACING.lg,
@@ -167,16 +172,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginRight: 28,
+  },
   welcomeSubtitle: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMuted,
     letterSpacing: 1,
   },
   welcomeTitle: {
     fontSize: 22,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
     marginTop: 2,
   },
   badgeRow: {
@@ -187,28 +196,23 @@ const styles = StyleSheet.create({
   dateLabel: {
     fontSize: 11,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMedium,
   },
   profileBtn: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.roleSeniorBg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.roleSeniorBorder,
   },
   selfActionBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   selfActionLeft: {
     flexDirection: 'row',
@@ -219,31 +223,26 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: RADIUS.sm,
-    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selfActionTitle: {
     fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   selfActionSub: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   sectionHeading: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMuted,
     letterSpacing: 0.9,
   },
   sectionSub: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMedium,
     marginBottom: SPACING.md,
     marginTop: 2,
   },
@@ -271,6 +270,5 @@ const styles = StyleSheet.create({
   seeAllText: {
     fontSize: 12,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
   },
 });

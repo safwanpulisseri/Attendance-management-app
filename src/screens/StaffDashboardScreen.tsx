@@ -11,10 +11,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Button } from '../components/Button';
 import { AttendanceCard } from '../components/AttendanceCard';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { formatDisplayDate, getCurrentTimeString, getTodayDateString } from '../utils/dateUtils';
 import { AttendanceStatus } from '../types';
 
@@ -25,12 +27,12 @@ interface StaffDashboardScreenProps {
 export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navigation }) => {
   const { currentUser } = useAuth();
   const { checkIn, checkOut, getTodayRecord, getUserRecords } = useAttendance();
+  const { colors } = useTheme();
 
   const [currentTime, setCurrentTime] = useState(getCurrentTimeString());
   const [actionLoading, setActionLoading] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  // Live clock tick
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(getCurrentTimeString());
@@ -77,47 +79,50 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Executive Profile Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>WORKSPACE SESSION</Text>
-            <Text style={styles.name}>{currentUser.name}</Text>
+            <Text style={[styles.greeting, { color: colors.slateMuted }]}>WORKSPACE SESSION</Text>
+            <Text style={[styles.name, { color: colors.textPrimary }]}>{currentUser.name}</Text>
             <View style={styles.metaRow}>
               <StatusBadge role={currentUser.role} size="sm" />
-              <Text style={styles.department}> • {currentUser.department}</Text>
+              <Text style={[styles.department, { color: colors.slateMedium }]}> • {currentUser.department}</Text>
             </View>
           </View>
 
-          <View style={styles.avatarPill}>
-            <Text style={styles.avatarText}>
-              {currentUser.name
-                .split(' ')
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join('')}
-            </Text>
+          <View style={styles.headerActions}>
+            <ThemeToggle />
+            <View style={[styles.avatarPill, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.avatarText, { color: colors.textPrimary }]}>
+                {currentUser.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join('')}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* Live Precision Clock Telemetry Card */}
-        <View style={[styles.clockCard, SHADOWS.card]}>
+        <View style={[styles.clockCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
           <View style={styles.clockHeader}>
-            <Ionicons name="time-outline" size={14} color={COLORS.slateMedium} />
-            <Text style={styles.dateLabel}>{formatDisplayDate(todayStr).toUpperCase()}</Text>
+            <Ionicons name="time-outline" size={14} color={colors.slateMedium} />
+            <Text style={[styles.dateLabel, { color: colors.slateMedium }]}>{formatDisplayDate(todayStr).toUpperCase()}</Text>
           </View>
 
-          <Text style={styles.liveClock}>{currentTime}</Text>
-          <Text style={styles.clockSubtext}>Precision Device Timestamp</Text>
+          <Text style={[styles.liveClock, { color: colors.textPrimary }]}>{currentTime}</Text>
+          <Text style={[styles.clockSubtext, { color: colors.slateMuted }]}>Precision Device Timestamp</Text>
         </View>
 
         {/* Today's Shift Status Card */}
-        <View style={[styles.statusCard, SHADOWS.card]}>
+        <View style={[styles.statusCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
           <View style={styles.statusHeaderRow}>
             <View>
-              <Text style={styles.sectionOverline}>CURRENT CYCLE</Text>
-              <Text style={styles.sectionTitle}>Today's Attendance</Text>
+              <Text style={[styles.sectionOverline, { color: colors.slateMuted }]}>CURRENT CYCLE</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Today's Attendance</Text>
             </View>
             <StatusBadge status={status} size="md" />
           </View>
@@ -127,8 +132,8 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
               style={[
                 styles.feedbackBox,
                 feedbackMessage.type === 'success'
-                  ? styles.feedbackSuccess
-                  : styles.feedbackError,
+                  ? { backgroundColor: colors.checkedInBg, borderColor: colors.checkedInBorder }
+                  : { backgroundColor: colors.dangerBg, borderColor: colors.dangerBorder },
               ]}
             >
               <Ionicons
@@ -139,7 +144,7 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
                 }
                 size={16}
                 color={
-                  feedbackMessage.type === 'success' ? COLORS.checkedInText : COLORS.dangerText
+                  feedbackMessage.type === 'success' ? colors.checkedInText : colors.dangerText
                 }
               />
               <Text
@@ -148,8 +153,8 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
                   {
                     color:
                       feedbackMessage.type === 'success'
-                        ? COLORS.checkedInText
-                        : COLORS.dangerText,
+                        ? colors.checkedInText
+                        : colors.dangerText,
                   },
                 ]}
               >
@@ -160,16 +165,16 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
 
           {/* Time Highlights */}
           <View style={styles.timeHighlightRow}>
-            <View style={styles.timeBox}>
-              <Text style={styles.timeBoxLabel}>ARRIVAL TIME</Text>
-              <Text style={styles.timeBoxValue}>
+            <View style={[styles.timeBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.timeBoxLabel, { color: colors.slateMedium }]}>ARRIVAL TIME</Text>
+              <Text style={[styles.timeBoxValue, { color: colors.textPrimary }]}>
                 {todayRecord?.checkInTime || '--:--:--'}
               </Text>
             </View>
 
-            <View style={styles.timeBox}>
-              <Text style={styles.timeBoxLabel}>DEPARTURE TIME</Text>
-              <Text style={styles.timeBoxValue}>
+            <View style={[styles.timeBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.timeBoxLabel, { color: colors.slateMedium }]}>DEPARTURE TIME</Text>
+              <Text style={[styles.timeBoxValue, { color: colors.textPrimary }]}>
                 {todayRecord?.checkOutTime || '--:--:--'}
               </Text>
             </View>
@@ -202,11 +207,11 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
             )}
 
             {status === 'checked_out' && (
-              <View style={styles.completedNotice}>
-                <Ionicons name="checkmark-done" size={20} color={COLORS.checkedInText} />
+              <View style={[styles.completedNotice, { backgroundColor: colors.checkedInBg, borderColor: colors.checkedInBorder }]}>
+                <Ionicons name="checkmark-done" size={20} color={colors.checkedInText} />
                 <View style={styles.completedTextWrap}>
-                  <Text style={styles.completedTitle}>Shift Completed</Text>
-                  <Text style={styles.completedSub}>
+                  <Text style={[styles.completedTitle, { color: colors.checkedInText }]}>Shift Completed</Text>
+                  <Text style={[styles.completedSub, { color: colors.checkedInText }]}>
                     Attendance logged for today. No further actions required.
                   </Text>
                 </View>
@@ -218,20 +223,20 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
         {/* Recent Attendance Preview */}
         <View style={styles.historySection}>
           <View style={styles.historyHeader}>
-            <Text style={styles.sectionTitle}>Recent Logs</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recent Logs</Text>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('History');
               }}
               style={styles.viewAllBtn}
             >
-              <Text style={styles.viewAllText}>Full History</Text>
-              <Ionicons name="chevron-forward" size={13} color={COLORS.primary} />
+              <Text style={[styles.viewAllText, { color: colors.primaryAccent }]}>Full History</Text>
+              <Ionicons name="chevron-forward" size={13} color={colors.primaryAccent} />
             </TouchableOpacity>
           </View>
 
           {userRecentHistory.length === 0 ? (
-            <Text style={styles.noHistoryText}>No attendance records found yet.</Text>
+            <Text style={[styles.noHistoryText, { color: colors.slateMuted }]}>No attendance records found yet.</Text>
           ) : (
             userRecentHistory.map((rec) => (
               <AttendanceCard key={rec.id} record={rec} showUserInfo={false} />
@@ -246,7 +251,6 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     padding: SPACING.lg,
@@ -260,16 +264,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginRight: 28,
+  },
   greeting: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMuted,
     letterSpacing: 1,
   },
   name: {
     fontSize: 20,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
     marginTop: 2,
   },
   metaRow: {
@@ -280,31 +288,25 @@ const styles = StyleSheet.create({
   department: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMedium,
   },
   avatarPill: {
-    width: 44,
-    height: 44,
+    width: 38,
+    height: 38,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surfaceSubtle,
     borderWidth: 1,
-    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   clockCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   clockHeader: {
     flexDirection: 'row',
@@ -315,28 +317,23 @@ const styles = StyleSheet.create({
   dateLabel: {
     fontSize: 11,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.8,
   },
   liveClock: {
     fontSize: 30,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
     letterSpacing: 1,
     marginVertical: 4,
   },
   clockSubtext: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
   },
   statusCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   statusHeaderRow: {
     flexDirection: 'row',
@@ -347,13 +344,11 @@ const styles = StyleSheet.create({
   sectionOverline: {
     fontSize: 9,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMuted,
     letterSpacing: 0.9,
   },
   sectionTitle: {
     fontSize: 15,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   feedbackBox: {
     flexDirection: 'row',
@@ -361,17 +356,8 @@ const styles = StyleSheet.create({
     padding: SPACING.sm,
     borderRadius: RADIUS.sm,
     marginBottom: SPACING.md,
+    borderWidth: 1,
     gap: 8,
-  },
-  feedbackSuccess: {
-    backgroundColor: COLORS.checkedInBg,
-    borderColor: COLORS.checkedInBorder,
-    borderWidth: 1,
-  },
-  feedbackError: {
-    backgroundColor: COLORS.dangerBg,
-    borderColor: COLORS.dangerBorder,
-    borderWidth: 1,
   },
   feedbackText: {
     fontSize: 12,
@@ -385,23 +371,19 @@ const styles = StyleSheet.create({
   },
   timeBox: {
     flex: 1,
-    backgroundColor: COLORS.surfaceSubtle,
     borderRadius: RADIUS.sm,
     padding: SPACING.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   timeBoxLabel: {
     fontSize: 9,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.6,
     marginBottom: 3,
   },
   timeBoxValue: {
     fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   actionContainer: {
     marginTop: SPACING.xs,
@@ -409,11 +391,9 @@ const styles = StyleSheet.create({
   completedNotice: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.checkedInBg,
     padding: SPACING.md,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: COLORS.checkedInBorder,
     gap: 12,
   },
   completedTextWrap: {
@@ -422,12 +402,10 @@ const styles = StyleSheet.create({
   completedTitle: {
     fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.checkedInText,
   },
   completedSub: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.checkedInText,
     opacity: 0.85,
     marginTop: 2,
   },
@@ -448,12 +426,10 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 12,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
   },
   noHistoryText: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     textAlign: 'center',
     paddingVertical: SPACING.md,
   },

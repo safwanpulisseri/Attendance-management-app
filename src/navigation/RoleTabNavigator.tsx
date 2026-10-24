@@ -2,7 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, FONTS } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS } from '../constants/theme';
 
 // Screens
 import { AdminDashboardScreen } from '../screens/AdminDashboardScreen';
@@ -17,6 +18,7 @@ const Tab = createBottomTabNavigator();
 
 export const RoleTabNavigator: React.FC = () => {
   const { currentUser } = useAuth();
+  const { colors, isDark } = useTheme();
 
   if (!currentUser) return null;
 
@@ -24,11 +26,11 @@ export const RoleTabNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.slateMuted,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.slateMuted,
         tabBarStyle: {
-          backgroundColor: COLORS.surface,
-          borderTopColor: COLORS.border,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           height: 62,
           paddingBottom: 8,
@@ -49,7 +51,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={AdminDashboardScreen}
             options={{
               tabBarLabel: 'Command',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="grid-outline" size={20} color={color} />
               ),
             }}
@@ -59,7 +61,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={StaffDashboardScreen}
             options={{
               tabBarLabel: 'My Shift',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="finger-print-outline" size={20} color={color} />
               ),
             }}
@@ -69,7 +71,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={AttendanceRecordsScreen}
             options={{
               tabBarLabel: 'Registry',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="document-text-outline" size={20} color={color} />
               ),
             }}
@@ -79,7 +81,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={UserManagementScreen}
             options={{
               tabBarLabel: 'Workforce',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="people-outline" size={20} color={color} />
               ),
             }}
@@ -89,7 +91,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={ProfileScreen}
             options={{
               tabBarLabel: 'Governance',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="shield-outline" size={20} color={color} />
               ),
             }}
@@ -105,7 +107,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={SeniorStaffDashboardScreen}
             options={{
               tabBarLabel: 'Overview',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="grid-outline" size={20} color={color} />
               ),
             }}
@@ -115,7 +117,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={StaffDashboardScreen}
             options={{
               tabBarLabel: 'My Shift',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="finger-print-outline" size={20} color={color} />
               ),
             }}
@@ -125,7 +127,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={AttendanceRecordsScreen}
             options={{
               tabBarLabel: 'Staff Logs',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="people-outline" size={20} color={color} />
               ),
             }}
@@ -135,7 +137,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={ProfileScreen}
             options={{
               tabBarLabel: 'Account',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="person-outline" size={20} color={color} />
               ),
             }}
@@ -151,7 +153,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={StaffDashboardScreen}
             options={{
               tabBarLabel: 'Shift Clock',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="time-outline" size={20} color={color} />
               ),
             }}
@@ -161,7 +163,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={AttendanceHistoryScreen}
             options={{
               tabBarLabel: 'Ledger',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="calendar-outline" size={20} color={color} />
               ),
             }}
@@ -171,7 +173,7 @@ export const RoleTabNavigator: React.FC = () => {
             component={ProfileScreen}
             options={{
               tabBarLabel: 'Account',
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({ color }) => (
                 <Ionicons name="person-outline" size={20} color={color} />
               ),
             }}

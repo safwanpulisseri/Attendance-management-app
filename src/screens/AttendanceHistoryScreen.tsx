@@ -10,7 +10,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { EmptyState } from '../components/EmptyState';
 import { Input } from '../components/Input';
@@ -19,6 +21,7 @@ import { StatusBadge } from '../components/StatusBadge';
 export const AttendanceHistoryScreen: React.FC = () => {
   const { currentUser } = useAuth();
   const { getUserRecords } = useAttendance();
+  const { colors } = useTheme();
 
   const [searchDate, setSearchDate] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'checked_out' | 'checked_in'>('all');
@@ -44,36 +47,48 @@ export const AttendanceHistoryScreen: React.FC = () => {
   const completedDays = userRecords.filter((r) => r.status === 'checked_out').length;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Personal Shift Log</Text>
-            <Text style={styles.subtitle}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Personal Shift Log</Text>
+            <Text style={[styles.subtitle, { color: colors.slateMuted }]}>
               Historical ledger for {currentUser.name}
             </Text>
           </View>
-          <StatusBadge role={currentUser.role} size="sm" />
+          <View style={styles.headerRight}>
+            <StatusBadge role={currentUser.role} size="sm" />
+            <ThemeToggle variant="compact" />
+          </View>
         </View>
 
         {/* Telemetry Summary Card */}
-        <View style={[styles.summaryCard, SHADOWS.card]}>
+        <View
+          style={[
+            styles.summaryCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+            SHADOWS.card,
+          ]}
+        >
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>{totalDays}</Text>
-            <Text style={styles.statLabel}>TOTAL SHIFTS</Text>
+            <Text style={[styles.statNumber, { color: colors.textPrimary }]}>{totalDays}</Text>
+            <Text style={[styles.statLabel, { color: colors.slateMedium }]}>TOTAL SHIFTS</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: COLORS.checkedInText }]}>{completedDays}</Text>
-            <Text style={styles.statLabel}>COMPLETED</Text>
+            <Text style={[styles.statNumber, { color: colors.checkedInText }]}>{completedDays}</Text>
+            <Text style={[styles.statLabel, { color: colors.slateMedium }]}>COMPLETED</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: COLORS.primaryAccent }]}>
+            <Text style={[styles.statNumber, { color: colors.primaryAccent }]}>
               {totalDays > 0 ? `${Math.round((completedDays / totalDays) * 100)}%` : '0%'}
             </Text>
-            <Text style={styles.statLabel}>RELIABILITY</Text>
+            <Text style={[styles.statLabel, { color: colors.slateMedium }]}>RELIABILITY</Text>
           </View>
         </View>
 
@@ -91,28 +106,58 @@ export const AttendanceHistoryScreen: React.FC = () => {
 
           <View style={styles.filterPills}>
             <TouchableOpacity
-              style={[styles.pill, statusFilter === 'all' && styles.pillActive]}
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                statusFilter === 'all' && [styles.pillActive, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
               onPress={() => setStatusFilter('all')}
             >
-              <Text style={[styles.pillText, statusFilter === 'all' && styles.pillTextActive]}>
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  statusFilter === 'all' && [styles.pillTextActive, { color: colors.textInverse }],
+                ]}
+              >
                 All Logs
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.pill, statusFilter === 'checked_out' && styles.pillActive]}
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                statusFilter === 'checked_out' && [styles.pillActive, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
               onPress={() => setStatusFilter('checked_out')}
             >
-              <Text style={[styles.pillText, statusFilter === 'checked_out' && styles.pillTextActive]}>
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  statusFilter === 'checked_out' && [styles.pillTextActive, { color: colors.textInverse }],
+                ]}
+              >
                 Completed
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.pill, statusFilter === 'checked_in' && styles.pillActive]}
+              style={[
+                styles.pill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                statusFilter === 'checked_in' && [styles.pillActive, { backgroundColor: colors.primary, borderColor: colors.primary }],
+              ]}
               onPress={() => setStatusFilter('checked_in')}
             >
-              <Text style={[styles.pillText, statusFilter === 'checked_in' && styles.pillTextActive]}>
+              <Text
+                style={[
+                  styles.pillText,
+                  { color: colors.slateMedium },
+                  statusFilter === 'checked_in' && [styles.pillTextActive, { color: colors.textInverse }],
+                ]}
+              >
                 In Progress
               </Text>
             </TouchableOpacity>
@@ -148,7 +193,6 @@ export const AttendanceHistoryScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   container: {
     flex: 1,
@@ -164,26 +208,28 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     paddingBottom: SPACING.xs,
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginRight: 28,
+  },
   title: {
     fontSize: 22,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   summaryCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface,
     marginHorizontal: SPACING.lg,
     marginVertical: SPACING.sm,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   statBox: {
     flex: 1,
@@ -192,19 +238,16 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 20,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
     letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 9,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.8,
     marginTop: 3,
   },
   statDivider: {
     width: 1,
-    backgroundColor: COLORS.border,
   },
   filterRow: {
     paddingHorizontal: SPACING.lg,
@@ -222,21 +265,14 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
-  pillActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
+  pillActive: {},
   pillText: {
     fontSize: 11,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMedium,
   },
   pillTextActive: {
-    color: COLORS.textInverse,
     fontFamily: FONTS.bold,
   },
   listContent: {

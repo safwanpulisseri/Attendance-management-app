@@ -11,11 +11,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, FONTS, RADIUS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SPACING } from '../constants/theme';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { Input } from '../components/Input';
 import { EmptyState } from '../components/EmptyState';
 import { StatusBadge } from '../components/StatusBadge';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { getTodayDateString, getRecentDateStrings, formatDisplayDate } from '../utils/dateUtils';
 
 interface AttendanceRecordsScreenProps {
@@ -25,6 +27,7 @@ interface AttendanceRecordsScreenProps {
 export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = ({ route }) => {
   const { currentUser } = useAuth();
   const { getScopedRecords, filterRecords } = useAttendance();
+  const { colors } = useTheme();
 
   const initialRole = route?.params?.role || 'all';
   const initialDate = route?.params?.date || 'all';
@@ -67,20 +70,20 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
   const hasActiveFilters = searchQuery.trim() !== '' || selectedDate !== 'all' || (currentUser.role === 'admin' && selectedRole !== 'all');
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Attendance Records</Text>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Attendance Records</Text>
+            <Text style={[styles.subtitle, { color: colors.slateMuted }]}>
               {currentUser.role === 'admin'
                 ? 'Comprehensive enterprise attendance registry'
                 : 'Operational staff attendance registry'}
             </Text>
           </View>
           <View style={styles.badgeWrap}>
-            <StatusBadge role={currentUser.role} size="sm" />
+            <ThemeToggle />
           </View>
         </View>
 
@@ -99,7 +102,7 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
 
         {/* Filter Pills - Dates */}
         <View style={styles.filterSection}>
-          <Text style={styles.filterLabel}>TIMEFRAME</Text>
+          <Text style={[styles.filterLabel, { color: colors.slateMedium }]}>TIMEFRAME</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -117,10 +120,19 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
               return (
                 <TouchableOpacity
                   key={dateVal}
-                  style={[styles.pill, isSelected && styles.pillSelected]}
+                  style={[
+                    styles.pill,
+                    { backgroundColor: isSelected ? colors.primary : colors.surface, borderColor: isSelected ? colors.primary : colors.border },
+                  ]}
                   onPress={() => setSelectedDate(dateVal)}
                 >
-                  <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
+                  <Text
+                    style={[
+                      styles.pillText,
+                      { color: isSelected ? colors.textInverse : colors.slateMedium },
+                      isSelected && { fontFamily: FONTS.bold },
+                    ]}
+                  >
                     {label}
                   </Text>
                 </TouchableOpacity>
@@ -132,7 +144,7 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
         {/* Filter Pills - Roles (Admin only) */}
         {currentUser.role === 'admin' && (
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>ROLE SCOPE</Text>
+            <Text style={[styles.filterLabel, { color: colors.slateMedium }]}>ROLE SCOPE</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -143,10 +155,19 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
                 return (
                   <TouchableOpacity
                     key={r.value}
-                    style={[styles.pill, isSelected && styles.pillSelected]}
+                    style={[
+                      styles.pill,
+                      { backgroundColor: isSelected ? colors.primary : colors.surface, borderColor: isSelected ? colors.primary : colors.border },
+                    ]}
                     onPress={() => setSelectedRole(r.value)}
                   >
-                    <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
+                    <Text
+                      style={[
+                        styles.pillText,
+                        { color: isSelected ? colors.textInverse : colors.slateMedium },
+                        isSelected && { fontFamily: FONTS.bold },
+                      ]}
+                    >
                       {r.label}
                     </Text>
                   </TouchableOpacity>
@@ -157,14 +178,14 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
         )}
 
         {/* Active Filters Summary Bar */}
-        <View style={styles.summaryBar}>
-          <Text style={styles.summaryCount}>
-            Found <Text style={styles.countBold}>{filtered.length}</Text> shift record(s)
+        <View style={[styles.summaryBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+          <Text style={[styles.summaryCount, { color: colors.slateMedium }]}>
+            Found <Text style={[styles.countBold, { color: colors.textPrimary }]}>{filtered.length}</Text> shift record(s)
           </Text>
           {hasActiveFilters && (
             <TouchableOpacity onPress={clearFilters} style={styles.clearBtn}>
-              <Ionicons name="refresh" size={13} color={COLORS.danger} />
-              <Text style={styles.clearText}>Clear Filters</Text>
+              <Ionicons name="refresh" size={13} color={colors.danger} />
+              <Text style={[styles.clearText, { color: colors.danger }]}>Clear Filters</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -195,7 +216,6 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   container: {
     flex: 1,
@@ -214,12 +234,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
     maxWidth: 290,
   },
@@ -242,7 +260,6 @@ const styles = StyleSheet.create({
   filterLabel: {
     fontSize: 9,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.8,
     marginRight: 8,
     minWidth: 70,
@@ -255,22 +272,11 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 11,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  pillSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
   },
   pillText: {
     fontSize: 11,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMedium,
-  },
-  pillTextSelected: {
-    color: COLORS.textInverse,
-    fontFamily: FONTS.bold,
   },
   summaryBar: {
     flexDirection: 'row',
@@ -279,18 +285,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.surface,
     marginTop: 6,
   },
   summaryCount: {
     fontSize: 12,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMedium,
   },
   countBold: {
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   clearBtn: {
     flexDirection: 'row',
@@ -300,7 +302,6 @@ const styles = StyleSheet.create({
   clearText: {
     fontSize: 11,
     fontFamily: FONTS.bold,
-    color: COLORS.danger,
   },
   listContent: {
     padding: SPACING.lg,

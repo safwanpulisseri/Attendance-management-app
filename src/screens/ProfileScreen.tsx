@@ -12,15 +12,18 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Button } from '../components/Button';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { formatDisplayDate } from '../utils/dateUtils';
 import { INITIAL_USERS } from '../data/dummyData';
 
 export const ProfileScreen: React.FC = () => {
   const { currentUser, logout, quickLogin } = useAuth();
   const { resetAllAttendanceData } = useAttendance();
+  const { colors, isDark } = useTheme();
 
   const [resetting, setResetting] = useState(false);
 
@@ -60,18 +63,21 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Account Governance</Text>
-          <Text style={styles.subtitle}>Session management and evaluator tools</Text>
+          <View>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Account Governance</Text>
+            <Text style={[styles.subtitle, { color: colors.slateMuted }]}>Session management and evaluator tools</Text>
+          </View>
+          <ThemeToggle />
         </View>
 
         {/* User Card */}
-        <View style={[styles.profileCard, SHADOWS.card]}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
+        <View style={[styles.profileCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
+          <View style={[styles.avatar, { backgroundColor: colors.surfaceSubtle, borderColor: colors.borderStrong }]}>
+            <Text style={[styles.avatarText, { color: colors.textPrimary }]}>
               {currentUser.name
                 .split(' ')
                 .map((n) => n[0])
@@ -80,37 +86,66 @@ export const ProfileScreen: React.FC = () => {
             </Text>
           </View>
 
-          <Text style={styles.name}>{currentUser.name}</Text>
-          <Text style={styles.email}>{currentUser.email}</Text>
+          <Text style={[styles.name, { color: colors.textPrimary }]}>{currentUser.name}</Text>
+          <Text style={[styles.email, { color: colors.slateMuted }]}>{currentUser.email}</Text>
 
           <View style={styles.badgeWrap}>
             <StatusBadge role={currentUser.role} size="md" />
           </View>
 
-          <View style={styles.infoGrid}>
+          <View style={[styles.infoGrid, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
             <View style={styles.infoCol}>
-              <Text style={styles.infoLabel}>SECURITY ID</Text>
-              <Text style={styles.infoVal}>{currentUser.id}</Text>
+              <Text style={[styles.infoLabel, { color: colors.slateMedium }]}>SECURITY ID</Text>
+              <Text style={[styles.infoVal, { color: colors.textPrimary }]}>{currentUser.id}</Text>
             </View>
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
             <View style={styles.infoCol}>
-              <Text style={styles.infoLabel}>DEPARTMENT</Text>
-              <Text style={styles.infoVal}>{currentUser.department}</Text>
+              <Text style={[styles.infoLabel, { color: colors.slateMedium }]}>DEPARTMENT</Text>
+              <Text style={[styles.infoVal, { color: colors.textPrimary }]}>{currentUser.department}</Text>
             </View>
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
             <View style={styles.infoCol}>
-              <Text style={styles.infoLabel}>APPOINTED</Text>
-              <Text style={styles.infoVal}>
+              <Text style={[styles.infoLabel, { color: colors.slateMedium }]}>APPOINTED</Text>
+              <Text style={[styles.infoVal, { color: colors.textPrimary }]}>
                 {currentUser.joinedDate ? formatDisplayDate(currentUser.joinedDate).slice(-4) : '2024'}
               </Text>
             </View>
           </View>
         </View>
 
+        {/* APPEARANCE & THEME CHANGER SECTION */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.slateMuted }]}>INTERFACE APPEARANCE</Text>
+          <Text style={[styles.sectionDesc, { color: colors.slateMedium }]}>
+            Seamless Duo Screen Aperture transition between Obsidian and Light:
+          </Text>
+
+          <View style={[styles.appearanceBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.appearanceTextWrap}>
+              <View style={styles.appearanceLabelRow}>
+                <Ionicons
+                  name={isDark ? 'moon' : 'sunny'}
+                  size={16}
+                  color={isDark ? colors.primaryAccent : colors.accentGold}
+                />
+                <Text style={[styles.appearanceTitle, { color: colors.textPrimary }]}>
+                  {isDark ? 'Obsidian OLED Dark' : 'Titanium Clean Light'}
+                </Text>
+              </View>
+              <Text style={[styles.appearanceSub, { color: colors.slateMuted }]}>
+                Hardware-accelerated fluid curtain reveal
+              </Text>
+            </View>
+            <View style={{ width: 140 }}>
+              <ThemeToggle variant="segmented" />
+            </View>
+          </View>
+        </View>
+
         {/* Quick Role Switcher for HR Assessment Reviewers */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>EVALUATOR ROLE SWITCHER</Text>
-          <Text style={styles.sectionDesc}>
+          <Text style={[styles.sectionTitle, { color: colors.slateMuted }]}>EVALUATOR ROLE SWITCHER</Text>
+          <Text style={[styles.sectionDesc, { color: colors.slateMedium }]}>
             Instantly shift security contexts without re-entering credentials:
           </Text>
 
@@ -122,7 +157,8 @@ export const ProfileScreen: React.FC = () => {
                   key={acc.id}
                   style={[
                     styles.switchCard,
-                    isCurrent && styles.switchCardCurrent,
+                    { backgroundColor: colors.surface, borderColor: isCurrent ? colors.primaryAccent : colors.border },
+                    isCurrent && { borderWidth: 1.5 },
                     SHADOWS.subtle,
                   ]}
                   onPress={() => quickLogin(acc)}
@@ -131,13 +167,13 @@ export const ProfileScreen: React.FC = () => {
                   <View style={styles.switchTop}>
                     <StatusBadge role={acc.role} size="sm" />
                     {isCurrent && (
-                      <Ionicons name="checkmark-circle" size={16} color={COLORS.primary} />
+                      <Ionicons name="checkmark-circle" size={16} color={colors.primaryAccent} />
                     )}
                   </View>
-                  <Text style={styles.switchName} numberOfLines={1}>
+                  <Text style={[styles.switchName, { color: colors.textPrimary }]} numberOfLines={1}>
                     {acc.name}
                   </Text>
-                  <Text style={styles.switchEmail} numberOfLines={1}>
+                  <Text style={[styles.switchEmail, { color: colors.slateMuted }]} numberOfLines={1}>
                     {acc.email}
                   </Text>
                 </TouchableOpacity>
@@ -148,23 +184,23 @@ export const ProfileScreen: React.FC = () => {
 
         {/* System Administration & Diagnostics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>DATA & MAINTENANCE</Text>
+          <Text style={[styles.sectionTitle, { color: colors.slateMuted }]}>DATA & MAINTENANCE</Text>
 
           <TouchableOpacity
-            style={[styles.menuItem, SHADOWS.subtle]}
+            style={[styles.menuItem, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.subtle]}
             onPress={handleResetData}
             activeOpacity={0.75}
           >
             <View style={styles.menuLeft}>
-              <View style={[styles.menuIcon, { backgroundColor: COLORS.pendingBg }]}>
-                <Ionicons name="reload-outline" size={18} color={COLORS.accentGold} />
+              <View style={[styles.menuIcon, { backgroundColor: colors.pendingBg }]}>
+                <Ionicons name="reload-outline" size={18} color={colors.accentGold} />
               </View>
               <View>
-                <Text style={styles.menuTitle}>Restore Initial Seed Records</Text>
-                <Text style={styles.menuSub}>Reset check-ins and personnel records to baseline</Text>
+                <Text style={[styles.menuTitle, { color: colors.textPrimary }]}>Restore Initial Seed Records</Text>
+                <Text style={[styles.menuSub, { color: colors.slateMuted }]}>Reset check-ins and personnel records to baseline</Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.slateMuted} />
+            <Ionicons name="chevron-forward" size={16} color={colors.slateMuted} />
           </TouchableOpacity>
         </View>
 
@@ -179,7 +215,7 @@ export const ProfileScreen: React.FC = () => {
           style={{ marginTop: SPACING.md }}
         />
 
-        <Text style={styles.versionText}>
+        <Text style={[styles.versionText, { color: colors.slateMuted }]}>
           Cadence HR Platform v1.2.0 • React Native & Expo Engine
         </Text>
       </ScrollView>
@@ -190,7 +226,6 @@ export const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     padding: SPACING.lg,
@@ -200,53 +235,47 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxxl,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: SPACING.md,
   },
   title: {
     fontSize: 22,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   profileCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     alignItems: 'center',
     marginBottom: SPACING.lg,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
     borderWidth: 1.5,
-    borderColor: COLORS.borderStrong,
   },
   avatarText: {
     fontSize: 20,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
   },
   name: {
     fontSize: 17,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   email: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   badgeWrap: {
@@ -255,13 +284,11 @@ const styles = StyleSheet.create({
   },
   infoGrid: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surfaceSubtle,
     borderRadius: RADIUS.sm,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
     width: '100%',
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   infoCol: {
     flex: 1,
@@ -270,18 +297,15 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 9,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.8,
     marginBottom: 2,
   },
   infoVal: {
     fontSize: 12,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   divider: {
     width: 1,
-    backgroundColor: COLORS.border,
   },
   section: {
     marginBottom: SPACING.lg,
@@ -289,31 +313,45 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMuted,
     letterSpacing: 1,
     marginBottom: 2,
   },
   sectionDesc: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMedium,
     marginBottom: SPACING.sm,
+  },
+  appearanceBox: {
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+  },
+  appearanceTextWrap: {
+    flex: 1,
+    marginRight: SPACING.md,
+  },
+  appearanceLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 2,
+  },
+  appearanceTitle: {
+    fontSize: 13,
+    fontFamily: FONTS.bold,
+  },
+  appearanceSub: {
+    fontSize: 11,
+    fontFamily: FONTS.regular,
   },
   switchGrid: {
     gap: SPACING.xs,
   },
   switchCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
     ...(Platform.OS === 'web' ? ({ cursor: 'pointer', userSelect: 'none' } as any) : {}),
-  },
-  switchCardCurrent: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
   },
   switchTop: {
     flexDirection: 'row',
@@ -324,22 +362,18 @@ const styles = StyleSheet.create({
   switchName: {
     fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   switchEmail: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.surface,
     padding: SPACING.md,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
     marginTop: SPACING.xs,
     ...(Platform.OS === 'web' ? ({ cursor: 'pointer', userSelect: 'none' } as any) : {}),
   },
@@ -359,18 +393,15 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 13,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
   },
   menuSub: {
     fontSize: 11,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginTop: 2,
   },
   versionText: {
     fontSize: 10,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMuted,
     textAlign: 'center',
     marginTop: SPACING.lg,
     letterSpacing: 0.5,

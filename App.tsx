@@ -11,10 +11,21 @@ import {
   PlusJakartaSans_800ExtraBold,
 } from '@expo-google-fonts/plus-jakarta-sans';
 
+import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { AuthProvider } from './src/context/AuthContext';
 import { AttendanceProvider } from './src/context/AttendanceContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
-import { COLORS } from './src/constants/theme';
+
+function MainAppShell() {
+  const { colors, isDark } = useTheme();
+
+  return (
+    <View style={[styles.appContainer, { backgroundColor: colors.background }]}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <RootNavigator />
+    </View>
+  );
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -28,21 +39,20 @@ export default function App() {
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color={COLORS.primary} />
+        <ActivityIndicator size="small" color="#0F172A" />
       </View>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <AttendanceProvider>
-          <View style={styles.appContainer}>
-            <StatusBar style="dark" />
-            <RootNavigator />
-          </View>
-        </AttendanceProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AttendanceProvider>
+            <MainAppShell />
+          </AttendanceProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
@@ -56,7 +66,6 @@ const styles = StyleSheet.create({
   },
   appContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
     ...(Platform.OS === 'web'
       ? {
           maxWidth: 520,

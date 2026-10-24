@@ -11,13 +11,17 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { StatusBadge } from '../components/StatusBadge';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export const LoginScreen: React.FC = () => {
   const { login } = useAuth();
+  const { colors, isDark } = useTheme();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -39,14 +43,17 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
-  const fillDemoAccount = (roleEmail: string, rolePass: string) => {
+  const fillDemoAccount = async (roleEmail: string, rolePass: string) => {
     setEmail(roleEmail);
     setPassword(rolePass);
     setErrorMessage('');
+    setLoading(true);
+    await login(roleEmail, rolePass);
+    setLoading(false);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
@@ -55,30 +62,36 @@ export const LoginScreen: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Top Bar with Theme Toggle */}
+          <View style={styles.topUtilityRow}>
+            <ThemeToggle />
+            <View style={{ flex: 1 }} />
+          </View>
+
           {/* Executive Brand Header */}
           <View style={styles.header}>
-            <View style={styles.brandBadge}>
-              <View style={styles.brandDot} />
-              <Text style={styles.brandBadgeText}>ENTERPRISE WORKFORCE</Text>
+            <View style={[styles.brandBadge, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <View style={[styles.brandDot, { backgroundColor: colors.primaryAccent }]} />
+              <Text style={[styles.brandBadgeText, { color: colors.slateMedium }]}>ENTERPRISE WORKFORCE</Text>
             </View>
 
-            <Text style={styles.brandTitle}>CADENCE</Text>
-            <Text style={styles.brandSubtitle}>
+            <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>CADENCE</Text>
+            <Text style={[styles.brandSubtitle, { color: colors.slateMedium }]}>
               Attendance & Shift Management System
             </Text>
           </View>
 
           {/* Login Card */}
-          <View style={[styles.card, SHADOWS.card]}>
-            <Text style={styles.cardTitle}>Identity Sign In</Text>
-            <Text style={styles.cardSubtitle}>
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Identity Sign In</Text>
+            <Text style={[styles.cardSubtitle, { color: colors.slateMuted }]}>
               Authenticate using your organization credentials
             </Text>
 
             {errorMessage ? (
-              <View style={styles.errorBox}>
-                <Ionicons name="alert-circle" size={16} color={COLORS.danger} />
-                <Text style={styles.errorBannerText}>{errorMessage}</Text>
+              <View style={[styles.errorBox, { backgroundColor: colors.dangerBg, borderColor: colors.dangerBorder }]}>
+                <Ionicons name="alert-circle" size={16} color={colors.danger} />
+                <Text style={[styles.errorBannerText, { color: colors.dangerText }]}>{errorMessage}</Text>
               </View>
             ) : null}
 
@@ -121,56 +134,56 @@ export const LoginScreen: React.FC = () => {
           {/* Quick Demo Login Section for Assessors */}
           <View style={styles.demoSection}>
             <View style={styles.demoDividerRow}>
-              <View style={styles.demoLine} />
-              <Text style={styles.demoDividerText}>ONE-TAP EVALUATOR PROFILES</Text>
-              <View style={styles.demoLine} />
+              <View style={[styles.demoLine, { backgroundColor: colors.border }]} />
+              <Text style={[styles.demoDividerText, { color: colors.slateMuted }]}>ONE-TAP EVALUATOR PROFILES</Text>
+              <View style={[styles.demoLine, { backgroundColor: colors.border }]} />
             </View>
 
-            <Text style={styles.demoHint}>
+            <Text style={[styles.demoHint, { color: colors.slateMedium }]}>
               Tap below to pre-fill test credentials directly:
             </Text>
 
             <View style={styles.demoCardsContainer}>
               {/* Admin Pill */}
               <TouchableOpacity
-                style={styles.demoPill}
+                style={[styles.demoPill, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 activeOpacity={0.75}
                 onPress={() => fillDemoAccount('admin@test.com', 'Admin@123')}
               >
                 <View style={styles.demoPillHeader}>
                   <StatusBadge role="admin" size="sm" />
-                  <Text style={styles.demoRoleMeta}>Full Privileges</Text>
+                  <Text style={[styles.demoRoleMeta, { color: colors.slateMuted }]}>Full Privileges</Text>
                 </View>
-                <Text style={styles.demoEmail}>admin@test.com</Text>
-                <Text style={styles.demoPass}>PW: Admin@123</Text>
+                <Text style={[styles.demoEmail, { color: colors.textPrimary }]}>admin@test.com</Text>
+                <Text style={[styles.demoPass, { color: colors.slateMedium }]}>PW: Admin@123</Text>
               </TouchableOpacity>
 
               {/* Senior Staff Pill */}
               <TouchableOpacity
-                style={styles.demoPill}
+                style={[styles.demoPill, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 activeOpacity={0.75}
                 onPress={() => fillDemoAccount('senior@test.com', 'Senior@123')}
               >
                 <View style={styles.demoPillHeader}>
                   <StatusBadge role="senior_staff" size="sm" />
-                  <Text style={styles.demoRoleMeta}>Staff Monitor</Text>
+                  <Text style={[styles.demoRoleMeta, { color: colors.slateMuted }]}>Staff Monitor</Text>
                 </View>
-                <Text style={styles.demoEmail}>senior@test.com</Text>
-                <Text style={styles.demoPass}>PW: Senior@123</Text>
+                <Text style={[styles.demoEmail, { color: colors.textPrimary }]}>senior@test.com</Text>
+                <Text style={[styles.demoPass, { color: colors.slateMedium }]}>PW: Senior@123</Text>
               </TouchableOpacity>
 
               {/* Staff Pill */}
               <TouchableOpacity
-                style={styles.demoPill}
+                style={[styles.demoPill, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 activeOpacity={0.75}
                 onPress={() => fillDemoAccount('staff@test.com', 'Staff@123')}
               >
                 <View style={styles.demoPillHeader}>
                   <StatusBadge role="staff" size="sm" />
-                  <Text style={styles.demoRoleMeta}>Individual Access</Text>
+                  <Text style={[styles.demoRoleMeta, { color: colors.slateMuted }]}>Individual Access</Text>
                 </View>
-                <Text style={styles.demoEmail}>staff@test.com</Text>
-                <Text style={styles.demoPass}>PW: Staff@123</Text>
+                <Text style={[styles.demoEmail, { color: colors.textPrimary }]}>staff@test.com</Text>
+                <Text style={[styles.demoPass, { color: colors.slateMedium }]}>PW: Staff@123</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -183,85 +196,78 @@ export const LoginScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   container: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.xxl,
+    paddingVertical: SPACING.lg,
     alignItems: 'center',
     maxWidth: 480,
     width: '100%',
     alignSelf: 'center',
   },
+  topUtilityRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: SPACING.xs,
+  },
   header: {
     alignItems: 'center',
     marginBottom: SPACING.xl,
-    marginTop: SPACING.md,
+    marginTop: SPACING.xs,
   },
   brandBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.surface,
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: COLORS.border,
     marginBottom: SPACING.sm,
   },
   brandDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.primaryAccent,
   },
   brandBadgeText: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMedium,
     letterSpacing: 0.9,
   },
   brandTitle: {
     fontSize: 26,
     fontFamily: FONTS.extraBold,
-    color: COLORS.textPrimary,
     letterSpacing: 1.5,
   },
   brandSubtitle: {
     fontSize: 13,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMedium,
     marginTop: 4,
   },
   card: {
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
     padding: SPACING.xl,
     width: '100%',
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   cardTitle: {
     fontSize: 18,
     fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   cardSubtitle: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMuted,
     marginBottom: SPACING.lg,
   },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.dangerBg,
-    borderColor: COLORS.dangerBorder,
     borderWidth: 1,
     borderRadius: RADIUS.sm,
     padding: SPACING.md,
@@ -272,7 +278,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     fontFamily: FONTS.medium,
-    color: COLORS.dangerText,
   },
   loginBtn: {
     marginTop: SPACING.sm,
@@ -289,19 +294,16 @@ const styles = StyleSheet.create({
   demoLine: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.border,
   },
   demoDividerText: {
     fontSize: 10,
     fontFamily: FONTS.bold,
-    color: COLORS.slateMuted,
     marginHorizontal: SPACING.md,
     letterSpacing: 1,
   },
   demoHint: {
     fontSize: 12,
     fontFamily: FONTS.regular,
-    color: COLORS.slateMedium,
     textAlign: 'center',
     marginBottom: SPACING.md,
   },
@@ -309,9 +311,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   demoPill: {
-    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.xs,
@@ -326,17 +326,14 @@ const styles = StyleSheet.create({
   demoRoleMeta: {
     fontSize: 11,
     fontFamily: FONTS.medium,
-    color: COLORS.slateMuted,
   },
   demoEmail: {
     fontSize: 13,
     fontFamily: FONTS.semiBold,
-    color: COLORS.textPrimary,
   },
   demoPass: {
     fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    color: COLORS.slateMedium,
     marginTop: 2,
   },
 });

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, RADIUS, SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { FONTS, RADIUS, SPACING } from '../constants/theme';
 import { Button } from './Button';
 
 interface EmptyStateProps {
@@ -19,13 +20,17 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionTitle,
   onActionPress,
 }) => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
-      <View style={styles.iconWrap}>
-        <Ionicons name={icon} size={36} color={COLORS.primary} />
+      <View style={[styles.iconWrap, { backgroundColor: colors.surfaceSubtle }]}>
+        <Ionicons name={icon} size={34} color={colors.primaryAccent} />
       </View>
-      <Text style={styles.title}>{title}</Text>
-      {description ? <Text style={styles.description}>{description}</Text> : null}
+      <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
+      {description ? (
+        <Text style={[styles.description, { color: colors.textMuted }]}>{description}</Text>
+      ) : null}
       {actionTitle && onActionPress ? (
         <Button
           title={actionTitle}
@@ -50,21 +55,19 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.md,
   },
   title: {
     fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
+    fontFamily: FONTS.bold,
     textAlign: 'center',
     marginBottom: 4,
   },
   description: {
     fontSize: 13,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.medium,
     textAlign: 'center',
     lineHeight: 18,
     maxWidth: 280,
