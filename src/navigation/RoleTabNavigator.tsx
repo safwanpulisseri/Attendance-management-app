@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -20,8 +21,22 @@ const Tab = createBottomTabNavigator();
 export const RoleTabNavigator: React.FC = () => {
   const { currentUser } = useAuth();
   const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
 
   if (!currentUser) return null;
+
+  // Dynamic bottom padding to ensure complete visibility above hardware/software nav bars (3-button or gesture)
+  const bottomPadding =
+    Platform.OS === "web"
+      ? 14
+      : Platform.OS === "android"
+      ? Math.max(insets.bottom, 12) + 6
+      : Math.max(insets.bottom, 10);
+
+  const tabHeight =
+    Platform.OS === "web"
+      ? 84
+      : 56 + bottomPadding;
 
   const initialRoute =
     currentUser.role === 'admin'
@@ -38,13 +53,14 @@ export const RoleTabNavigator: React.FC = () => {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.slateMuted,
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: Platform.OS === 'web' ? 84 : 62,
-          paddingBottom: Platform.OS === 'web' ? 14 : 8,
-          paddingTop: Platform.OS === 'web' ? 8 : 8,
+          height: tabHeight,
+          paddingBottom: bottomPadding,
+          paddingTop: 8,
         },
         tabBarIconStyle: Platform.OS === 'web' ? { height: 24, marginTop: 4 } : undefined,
         tabBarItemStyle:
