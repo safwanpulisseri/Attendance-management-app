@@ -82,3 +82,31 @@ export const getRecentDateStrings = (days: number = 7): string[] => {
   }
   return dates;
 };
+
+/**
+ * Returns contextual time-of-day greeting with appropriate emoji and optional name
+ */
+export const getTimeGreeting = (name?: string): { greeting: string; phrase: string; emoji: string } => {
+  const hour = new Date().getHours();
+  let phrase = 'Good day';
+  let emoji = '👋';
+
+  if (hour >= 5 && hour < 12) {
+    phrase = 'Good morning';
+    emoji = '☀️';
+  } else if (hour >= 12 && hour < 17) {
+    phrase = 'Good afternoon';
+    emoji = '🌤️';
+  } else if (hour >= 17 && hour < 22) {
+    phrase = 'Good evening';
+    emoji = '🌆';
+  } else {
+    phrase = 'Good evening';
+    emoji = '🌙';
+  }
+
+  const firstName = name ? name.split(' ')[0] : '';
+  const greeting = firstName ? `${phrase}, ${firstName}` : phrase;
+
+  return { greeting, phrase, emoji };
+};

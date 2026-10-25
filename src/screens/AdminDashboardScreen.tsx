@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -16,7 +17,7 @@ import { StatCard } from '../components/StatCard';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { formatDisplayDate, getTodayDateString } from '../utils/dateUtils';
+import { formatDisplayDate, getTodayDateString, getTimeGreeting } from '../utils/dateUtils';
 
 interface AdminDashboardScreenProps {
   navigation: any;
@@ -33,15 +34,18 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
   const allRecords = getScopedRecords(currentUser);
   const today = getTodayDateString();
   const recentRecords = allRecords.slice(0, 5);
+  const greeting = getTimeGreeting(currentUser.name);
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Executive Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={[styles.welcomeSubtitle, { color: colors.slateMuted }]}>ORGANIZATION GOVERNANCE</Text>
-            <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>Executive Command</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.welcomeSubtitle, { color: colors.slateMuted }]}>EXECUTIVE COMMAND</Text>
+            <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>
+              {greeting.greeting} {greeting.emoji}
+            </Text>
             <View style={styles.badgeRow}>
               <StatusBadge role="admin" size="sm" />
               <Text style={[styles.dateLabel, { color: colors.slateMedium }]}> • {formatDisplayDate(today)}</Text>
@@ -194,6 +198,7 @@ const styles = StyleSheet.create({
     maxWidth: 620,
     width: '100%',
     alignSelf: 'center',
+    paddingBottom: Platform.OS === 'web' ? 90 : SPACING.lg,
   },
   header: {
     flexDirection: 'row',

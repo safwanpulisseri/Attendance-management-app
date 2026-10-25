@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -22,8 +23,17 @@ export const RoleTabNavigator: React.FC = () => {
 
   if (!currentUser) return null;
 
+  const initialRoute =
+    currentUser.role === 'admin'
+      ? 'AdminDashboard'
+      : currentUser.role === 'senior_staff'
+      ? 'SeniorDashboard'
+      : 'Today';
+
   return (
     <Tab.Navigator
+      key={currentUser.role}
+      initialRouteName={initialRoute}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
@@ -32,14 +42,26 @@ export const RoleTabNavigator: React.FC = () => {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 62,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: Platform.OS === 'web' ? 84 : 62,
+          paddingBottom: Platform.OS === 'web' ? 14 : 8,
+          paddingTop: Platform.OS === 'web' ? 8 : 8,
         },
+        tabBarIconStyle: Platform.OS === 'web' ? { height: 24, marginTop: 4 } : undefined,
+        tabBarItemStyle:
+          Platform.OS === 'web'
+            ? ({
+                paddingVertical: 4,
+                cursor: 'pointer',
+                justifyContent: 'center',
+                alignItems: 'center',
+              } as any)
+            : undefined,
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: Platform.OS === 'web' ? 11 : 10,
           fontFamily: FONTS.semiBold,
           letterSpacing: 0.3,
+          lineHeight: Platform.OS === 'web' ? 14 : undefined,
+          marginBottom: Platform.OS === 'web' ? 2 : 0,
         },
       }}
     >

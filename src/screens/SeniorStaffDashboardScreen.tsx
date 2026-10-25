@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -17,7 +18,7 @@ import { AttendanceCard } from '../components/AttendanceCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { EmptyState } from '../components/EmptyState';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { formatDisplayDate, getTodayDateString } from '../utils/dateUtils';
+import { formatDisplayDate, getTodayDateString, getTimeGreeting } from '../utils/dateUtils';
 
 interface SeniorStaffDashboardScreenProps {
   navigation: any;
@@ -36,15 +37,18 @@ export const SeniorStaffDashboardScreen: React.FC<SeniorStaffDashboardScreenProp
   const scopedRecords = getScopedRecords(currentUser);
   const today = getTodayDateString();
   const todayStaffRecords = scopedRecords.filter((r) => r.date === today);
+  const greeting = getTimeGreeting(currentUser.name);
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={[styles.welcomeSubtitle, { color: colors.slateMuted }]}>TEAM COORDINATION</Text>
-            <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>Senior Staff Hub</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.welcomeSubtitle, { color: colors.slateMuted }]}>SENIOR STAFF HUB</Text>
+            <Text style={[styles.welcomeTitle, { color: colors.textPrimary }]}>
+              {greeting.greeting} {greeting.emoji}
+            </Text>
             <View style={styles.badgeRow}>
               <StatusBadge role="senior_staff" size="sm" />
               <Text style={[styles.dateLabel, { color: colors.slateMedium }]}> • {formatDisplayDate(today)}</Text>
@@ -165,6 +169,7 @@ const styles = StyleSheet.create({
     maxWidth: 620,
     width: '100%',
     alignSelf: 'center',
+    paddingBottom: Platform.OS === 'web' ? 90 : SPACING.lg,
   },
   header: {
     flexDirection: 'row',

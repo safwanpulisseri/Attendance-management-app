@@ -11,7 +11,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
 import { useTheme } from '../context/ThemeContext';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { EmptyState } from '../components/EmptyState';
@@ -59,7 +58,6 @@ export const AttendanceHistoryScreen: React.FC = () => {
           </View>
           <View style={styles.headerRight}>
             <StatusBadge role={currentUser.role} size="sm" />
-            <ThemeToggle variant="compact" />
           </View>
         </View>
 

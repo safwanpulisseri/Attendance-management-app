@@ -30,6 +30,14 @@ export const ProfileScreen: React.FC = () => {
   if (!currentUser) return null;
 
   const handleLogout = () => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Sign Out: Conclude your authenticated session?');
+      if (confirmed) {
+        logout();
+      }
+      return;
+    }
+
     Alert.alert('Sign Out', 'Conclude your authenticated session?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -43,6 +51,19 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const handleResetData = async () => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        'Reset Demo Baseline\n\nThis will restore all employee profiles and attendance records to baseline test scenarios. Ideal for fresh walkthroughs.\n\nProceed with reset?'
+      );
+      if (confirmed) {
+        setResetting(true);
+        await resetAllAttendanceData();
+        setResetting(false);
+        window.alert('Restored: Baseline demonstration records reloaded.');
+      }
+      return;
+    }
+
     Alert.alert(
       'Reset Demo Baseline',
       'This will restore all employee profiles and attendance records to baseline test scenarios. Ideal for fresh walkthroughs.',
@@ -117,7 +138,7 @@ export const ProfileScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.slateMuted }]}>INTERFACE APPEARANCE</Text>
           <Text style={[styles.sectionDesc, { color: colors.slateMedium }]}>
-            Seamless Duo Screen Aperture transition between Obsidian and Light:
+            Seamless circular top reveal transition between Obsidian and Light:
           </Text>
 
           <View style={[styles.appearanceBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -133,7 +154,7 @@ export const ProfileScreen: React.FC = () => {
                 </Text>
               </View>
               <Text style={[styles.appearanceSub, { color: colors.slateMuted }]}>
-                Hardware-accelerated fluid curtain reveal
+                Smooth top-side circular reveal
               </Text>
             </View>
             <View style={{ width: 140 }}>
@@ -216,7 +237,7 @@ export const ProfileScreen: React.FC = () => {
         />
 
         <Text style={[styles.versionText, { color: colors.slateMuted }]}>
-          Cadence HR Platform v1.2.0 • React Native & Expo Engine
+          Midland Marketing HR Portal v1.2.0 • React Native & Expo Engine
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -232,7 +253,7 @@ const styles = StyleSheet.create({
     maxWidth: 580,
     width: '100%',
     alignSelf: 'center',
-    paddingBottom: SPACING.xxxl,
+    paddingBottom: Platform.OS === 'web' ? 100 : SPACING.xxxl,
   },
   header: {
     flexDirection: 'row',

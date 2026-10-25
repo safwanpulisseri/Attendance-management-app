@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Alert,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -17,7 +18,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { Button } from '../components/Button';
 import { AttendanceCard } from '../components/AttendanceCard';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { formatDisplayDate, getCurrentTimeString, getTodayDateString } from '../utils/dateUtils';
+import { formatDisplayDate, getCurrentTimeString, getTodayDateString, getTimeGreeting } from '../utils/dateUtils';
 import { AttendanceStatus } from '../types';
 
 interface StaffDashboardScreenProps {
@@ -60,7 +61,7 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
       setFeedbackMessage({ text: res.message, type: 'success' });
     } else {
       setFeedbackMessage({ text: res.message, type: 'error' });
-      Alert.alert('Action Restricted', res.message);
+      if (Platform.OS === 'web') { window.alert(`Action Restricted: ${res.message}`); } else { Alert.alert('Action Restricted', res.message); }
     }
   };
 
@@ -78,14 +79,21 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
     }
   };
 
+  const isStaff = currentUser.role === "staff";
+  const greeting = getTimeGreeting(currentUser.name);
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Executive Profile Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={[styles.greeting, { color: colors.slateMuted }]}>WORKSPACE SESSION</Text>
-            <Text style={[styles.name, { color: colors.textPrimary }]}>{currentUser.name}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.greeting, { color: colors.slateMuted }]}>
+              {isStaff ? "PERSONAL SHIFT HUB" : "PERSONAL ATTENDANCE"}
+            </Text>
+            <Text style={[styles.name, { color: colors.textPrimary }]}>
+              {isStaff ? `${greeting.greeting} ${greeting.emoji}` : "My Shift Log"}
+            </Text>
             <View style={styles.metaRow}>
               <StatusBadge role={currentUser.role} size="sm" />
               <Text style={[styles.department, { color: colors.slateMedium }]}> • {currentUser.department}</Text>
@@ -93,7 +101,7 @@ export const StaffDashboardScreen: React.FC<StaffDashboardScreenProps> = ({ navi
           </View>
 
           <View style={styles.headerActions}>
-            <ThemeToggle />
+            {isStaff && <ThemeToggle />}
             <View style={[styles.avatarPill, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
               <Text style={[styles.avatarText, { color: colors.textPrimary }]}>
                 {currentUser.name
@@ -257,6 +265,7 @@ const styles = StyleSheet.create({
     maxWidth: 580,
     width: '100%',
     alignSelf: 'center',
+    paddingBottom: Platform.OS === 'web' ? 90 : SPACING.lg,
   },
   header: {
     flexDirection: 'row',

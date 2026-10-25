@@ -72,12 +72,12 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.header}>
             <View style={[styles.brandBadge, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={[styles.brandDot, { backgroundColor: colors.primaryAccent }]} />
-              <Text style={[styles.brandBadgeText, { color: colors.slateMedium }]}>ENTERPRISE WORKFORCE</Text>
+              <Text style={[styles.brandBadgeText, { color: colors.slateMedium }]}>MIDLAND MARKETING</Text>
             </View>
 
-            <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>CADENCE</Text>
+            <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>MIDLAND</Text>
             <Text style={[styles.brandSubtitle, { color: colors.slateMedium }]}>
-              Attendance & Shift Management System
+              Workforce Attendance & Shift Management
             </Text>
           </View>
 

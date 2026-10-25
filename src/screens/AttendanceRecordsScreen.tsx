@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import { AttendanceCard } from '../components/AttendanceCard';
 import { Input } from '../components/Input';
 import { EmptyState } from '../components/EmptyState';
 import { StatusBadge } from '../components/StatusBadge';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { getTodayDateString, getRecentDateStrings, formatDisplayDate } from '../utils/dateUtils';
 
 interface AttendanceRecordsScreenProps {
@@ -32,7 +31,16 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
   const initialRole = route?.params?.role || 'all';
   const initialDate = route?.params?.date || 'all';
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(route?.params?.search || '');
+
+  useEffect(() => {
+    if (route?.params?.search !== undefined) {
+      setSearchQuery(route.params.search);
+    }
+    if (route?.params?.role !== undefined) {
+      setSelectedRole(route.params.role);
+    }
+  }, [route?.params]);
   const [selectedDate, setSelectedDate] = useState<string>(initialDate);
   const [selectedRole, setSelectedRole] = useState<string>(initialRole);
 
@@ -83,7 +91,7 @@ export const AttendanceRecordsScreen: React.FC<AttendanceRecordsScreenProps> = (
             </Text>
           </View>
           <View style={styles.badgeWrap}>
-            <ThemeToggle />
+            <StatusBadge role={currentUser.role} size="sm" />
           </View>
         </View>
 

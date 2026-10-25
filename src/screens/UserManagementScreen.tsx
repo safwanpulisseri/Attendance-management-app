@@ -12,7 +12,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useAttendance } from '../context/AttendanceContext';
 import { useTheme } from '../context/ThemeContext';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { FONTS, RADIUS, SHADOWS, SPACING } from '../constants/theme';
 import { StatusBadge } from '../components/StatusBadge';
 import { Input } from '../components/Input';
@@ -21,7 +20,8 @@ import { EmptyState } from '../components/EmptyState';
 import { User, UserRole } from '../types';
 import { formatDisplayDate } from '../utils/dateUtils';
 
-export const UserManagementScreen: React.FC = () => {
+interface UserManagementScreenProps { navigation?: any; }
+export const UserManagementScreen: React.FC<UserManagementScreenProps> = ({ navigation }) => {
   const { currentUser, users } = useAuth();
   const { records } = useAttendance();
   const { colors } = useTheme();
@@ -82,7 +82,6 @@ export const UserManagementScreen: React.FC = () => {
             <View style={[styles.userCountPill, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
               <Text style={[styles.userCountText, { color: colors.slateDark }]}>{filteredUsers.length} Filtered</Text>
             </View>
-            <ThemeToggle variant="compact" />
           </View>
         </View>
 
@@ -318,11 +317,25 @@ export const UserManagementScreen: React.FC = () => {
                   </View>
 
                   <Button
+                    title="Inspect Attendance Registry"
+                    icon="document-text-outline"
+                    onPress={() => {
+                      const name = selectedUser.name;
+                      setSelectedUser(null);
+                      if (navigation) {
+                        navigation.navigate("Records", { search: name });
+                      }
+                    }}
+                    variant="primary"
+                    fullWidth
+                    style={{ marginTop: SPACING.md }}
+                  />
+                  <Button
                     title="Dismiss Profile"
                     onPress={() => setSelectedUser(null)}
                     variant="outline"
                     fullWidth
-                    style={{ marginTop: SPACING.md }}
+                    style={{ marginTop: SPACING.sm }}
                   />
                 </>
               )}
